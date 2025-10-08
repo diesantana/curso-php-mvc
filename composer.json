@@ -1,0 +1,12 @@
+{
+    "name": "diego/bng",
+    "description": "Aplicação para gestão de Coleta de dados",
+    "type": "project",
+    "authors": [
+        {
+            "name": "Diego Santana",
+            "email": "3c.santana@gmail.com"
+        }
+    ],
+    "require": {}
+}

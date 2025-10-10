@@ -8,5 +8,13 @@
             "email": "3c.santana@gmail.com"
         }
     ],
-    "require": {}
+    "require": {},
+    "autoload": {
+        "psr-4": {
+            "BNG\\Controllers\\": "app/controllers/"
+        },
+        "files": [
+            "app/config.php"
+        ]
+    }
 }

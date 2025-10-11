@@ -1,6 +1,6 @@
 <?php
 
-namespace BNG\Controllers;
+namespace bng\Controllers;
 
 class Main{
     public function teste() {

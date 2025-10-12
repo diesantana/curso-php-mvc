@@ -1,6 +1,7 @@
 <?php
 
 namespace bng\System;
+use Exception;
 
 class Router
 {
@@ -44,9 +45,18 @@ class Router
         }
 
 
-        // Exibindo os parâmetros adicionais
-        // teste com a URL: http://localhost/bng/public?ct=main&mt=detalhes&id=10&user=admin
-        echo '<pre>';
-        var_dump($parameters);
+        try {
+            // Montando o caminho completo da classe
+            $class = "bng\\Controllers\\$controller";
+            // Instância a classe
+            $controller = new $class();
+            // Chama o método passando os parâmetros como argumentos
+            $controller->$method(...$parameters); 
+            // "..." representa o operador rest é utilizado para "espalhar" 
+            // os valores do array, sendo passados de forma indivudual como parâmetros na chamada do método
+            
+        } catch(Exception $e) {
+            die($e->getMessage());
+        }
     }
 }

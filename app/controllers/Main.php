@@ -2,8 +2,12 @@
 
 namespace bng\Controllers;
 
-class Main{
-    public function teste() {
-        echo 'Main.php diz: Apredendo a configurar o autoload';
+class Main
+{
+    public function index($id = '')
+    {
+        echo "Estou dentro do controlador Main - index";
+        echo '<br>';
+        if(!empty($id)) echo "O id indicado foi $id";
     }
 }

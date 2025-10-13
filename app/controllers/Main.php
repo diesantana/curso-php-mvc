@@ -8,6 +8,7 @@ class Main
     {
         echo "Estou dentro do controlador Main - index";
         echo '<br>';
+        teste();
         if(!empty($id)) echo "O id indicado foi $id";
     }
 }

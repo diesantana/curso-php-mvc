@@ -6,3 +6,5 @@ use bng\System\Router;
 
 
 Router::dispatch();
+echo "Conteúdo do index.php";
+teste();

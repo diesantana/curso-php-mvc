@@ -7,4 +7,11 @@ use bng\System\Router;
 
 Router::dispatch();
 echo "Conteúdo do index.php";
-teste();
+
+$nomes = ['bob brown', 'maria green', 'alex grey'];
+$nome = 'ana rose';
+
+printData($nomes);
+// printData($nome);
+
+

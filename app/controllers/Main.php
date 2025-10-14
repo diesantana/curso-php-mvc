@@ -1,13 +1,12 @@
 <?php
 
 namespace bng\Controllers;
+use bng\Controllers\BaseController;
 
-class Main
+class Main extends BaseController
 {
-    public function index($id = '')
+    public function index()
     {
-        echo "Estou dentro do controlador Main - index";
-        echo '<br>';
-        if(!empty($id)) echo "O id indicado foi $id";
+        $this->view(); // Carrega a estrutura base do HTML
     }
 }

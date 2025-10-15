@@ -24,12 +24,6 @@ class Router
             $method = $_GET['mt'];
         }
 
-        // Leitura dos parâmetros principais
-        // Apenas exibe os dados das variáveis $controller e $method para teste
-        echo "<h3>Controller: {$controller}</h3>";
-        echo "<h3>Método: {$method}</h3>";
-
-
         // captura todos os parâmetros da URL
         // O result é um array associativo com os elementos na sintaxe chave-valor. 
         $parameters = $_GET;

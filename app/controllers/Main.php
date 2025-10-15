@@ -7,6 +7,13 @@ class Main extends BaseController
 {
     public function index()
     {
-        $this->view(); // Carrega a estrutura base do HTML
+        $data = [
+            'nome' => 'Bob',
+            'sobrenome' => 'Blue'
+        ];
+
+        $this->view('layouts/html_header');
+        $this->view('home', $data);
+        $this->view('layouts/html_footer');
     }
 }

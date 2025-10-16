@@ -2,11 +2,18 @@
 
 namespace bng\Controllers;
 use bng\Controllers\BaseController;
+use bng\Models\Agents;
 
 class Main extends BaseController
 {
     public function index()
     {
+
+        $modelAgents = new Agents();
+        $result = $modelAgents->getTotalAgents();
+
+        printData($result);
+        
         $data = [
             'nome' => 'Bob',
             'sobrenome' => 'Blue'

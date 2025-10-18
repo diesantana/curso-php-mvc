@@ -1,5 +1,4 @@
 <?php
-
 namespace bng\Controllers;
 
 use bng\Controllers\BaseController;
@@ -7,81 +6,106 @@ use bng\Models\Agents;
 
 class Main extends BaseController
 {
+    /**
+     * Ponto de entrada do main controller.
+     * Verifica se existe um usuário logado, se sim, carrega a view.
+     * Se não existir usuário logado, redireciona para o formulário de login (Método login_frm())
+     */
     public function index()
     {
-        $this->view('layouts/html_header');
+        // Verifica se existe um usuário logado. 
+        if (!checkSession()) {
+            // Se não existir um usuário logado eu chamo a função login_frm()
+            // login_frm é responsável por exibir o formulário de login
+            $this->login_frm();
+            return;
+        }
 
-        // login
-        // $this->view('login_frm');
+        // Se existir usuário logado
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        echo '<h3 class="text-white text-center">Olá mundo</h3>'; // Exibe um 'Hello world' (código temporário)
+        $this->view('layouts/html_footer'); // Estrutura inicial do HTML
+    }
 
-        // esqueci-me da password (formulário)
-        // $this->view('reset_password_frm');
+    /**
+     * Lógica para apresentar o formulário de login.
+     * Método responsável por apresentar o formulário de login com as possíveis mensagens de erro.
+     */
+    public function login_frm()
+    {
+        // Verificando se existe um usuário logado
+        if (checkSession()) {
+            // Se existir usuário logado, chama o método index. 
+            // O index, vai conter a lógica para apresentar a view de acordo com o perfil do user.
+            $this->index();
+            return;
+        }
 
-        // esqueci-me da password - email enviado
-        // $this->view('reset_password_email_sent');
+        // Se não existir usuário logado, verifica se existem erros.
+        $data = []; // Armazena possíveis mensagens erro
 
-        // esqueci-me da password - introduza o código
-        // $this->view('reset_password_insert_code');
+        // Se existir erros, armazena em $data[] e apaga os erros da sessão
+        // Os erros serão excluídos da sessão pois eles já estão sendo tratados.
+        if (!empty($_SESSION['validation_errors'])) {
+            $data['validation_errors'] = $_SESSION['validation_errors']; // Atribui os erros ao array $data
+            unset($_SESSION['validation_errors']); // Remove a variável da sessão
+        }
 
-        // esqueci-me da password - definir nova password
-        // $this->view('reset_password_define_password_frm');
+        // echo 'Chegou aqui';
 
-        // esqueci-me da password - definir nova password
-        // $this->view('reset_password_define_password_success');
+        // Exibe o formulário com os póssíveis erros
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('login_frm', $data); // View responsável pelo formulário de login
+        $this->view('layouts/html_footer'); // Estrutura inicial do HTML
 
-        // nav bar
-        $this->view('navbar');
+    }
 
-        // homepage
-        // $this->view('homepage');
+    /**
+     * Método responsável por tratar a submuissão do forumlário de login
+     */
+    public function login_submit() {
+        // echo 'Chegou aqui';
+        // Verifica se existe um usuário logado
+        if(checkSession()) {
+            // Se existir um usuário logado, chama o método index
+            // O método index() vai exibir a view de acordo com o perfil deste usuário logado.
+            $this->index();
+            return;
+        }
 
-        // meus clientes
-        // $this->view('agent_clients');
+        // echo 'Chegou aqui';
+        // Nenhum usuário está logado! 
+        // Verifica se o formulário foi submetido corretamente.
+        if($_SERVER['REQUEST_METHOD'] != 'POST') {
+            // Se o formulário não foi submetido corretamnte, chama o método index()
+            $this->index();
+            return;
+        }
+        // echo 'Chegou aqui';
+        
+        // Validação do formulário
+        $validation_errors = [];
+        if(empty($_POST['text_username']) || empty($_POST['text_password'])) {
+            $validation_errors[] = 'Username e password são obrigatórios!';
+        }
 
-        // inserir novo cliente
-        // $this->view('insert_client_frm');
 
-        // upload de ficheiro de clientes
-        // $this->view('upload_file_with_clients_frm');
+        // Se existir erros, vamos salvar na session
+        if(!empty($validation_errors)) {
+            $_SESSION['validation_errors'] = $validation_errors; // Salva os erros na session
+            $this->login_frm(); // Chama o método responsável por exibir o formulário de login
+            return;
+            // Quando o login_frm() verificar que não tem nenhum usuário logado, o formulário 
+            // vai ser exibido novamente, com os erros. 
+        }
 
-        // editar cliente
-        // $this->view('edit_client_frm');
+        // Aqui não existe nenhum erro
+        // Captura os valores enviados pelo usuário
+        $username = $_POST['text_username'];
+        $password = $_POST['text_password'];
 
-        // confirmar eliminação de cliente
-        // $this->view('delete_client_confirmation');
+        // Apenas exibe os dados, ainda não estamos fazendo o login (Código temporário)
+        echo $username . '<br>' . $password;
 
-        // perfil - alterar a password
-        // $this->view('profile_change_password_frm');
-
-        // perfil - password alterada com sucesso
-        // $this->view('profile_change_password_success'); 
-
-        // global clientes - para visualização dos clientes pelo admin
-        // $this->view('global_clients');
-
-        // ---------------
-        // gestão de agentes - quadro inicial
-        // $this->view('agents_management');
-
-        // gestão de agentes - adicionar agente formulário
-        // $this->view('agents_add_new_frm');
-
-        // envio de email para conclusão da password
-        // $this->view('agents_email_sent');    
-
-        // gestão de agentes - editar agente formulário
-        // $this->view('agents_edit_frm');
-
-        // gestão de agentes - confirmar eliminação
-        // $this->view('agents_delete_confirmation');
-
-        // gestão de agentes - confirmar reativação
-        // $this->view('agents_recover_confirmation'); 
-
-        // stats
-        // $this->view('stats'); 
-
-        $this->view('footer');
-        $this->view('layouts/html_footer');
     }
 }

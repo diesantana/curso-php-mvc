@@ -1,6 +1,7 @@
 <?php
 
 namespace bng\System;
+
 use Exception;
 
 class Router
@@ -30,11 +31,11 @@ class Router
 
         // Agora vamos remover os parâmtetros ct (controller) e mt (method) da variável $parameters 
         // o objetivo aqui é pegar apenas os parâmetros adicionais
-        if(key_exists('ct', $parameters)) {
+        if (key_exists('ct', $parameters)) {
             unset($parameters['ct']); // Se existe uma chave com o valor 'ct' remove esse elemento
         }
 
-        if(key_exists('mt', $parameters)) { 
+        if (key_exists('mt', $parameters)) {
             unset($parameters['mt']); // Se existe uma chave com o valor 'mt' remove esse elemento
         }
 
@@ -45,11 +46,11 @@ class Router
             // Instância a classe
             $controller = new $class();
             // Chama o método passando os parâmetros como argumentos
-            $controller->$method(...$parameters); 
+            $controller->$method(...$parameters);
             // "..." representa o operador rest é utilizado para "espalhar" 
             // os valores do array, sendo passados de forma indivudual como parâmetros na chamada do método
-            
-        } catch(Exception $e) {
+
+        } catch (Exception $e) {
             die($e->getMessage());
         }
     }

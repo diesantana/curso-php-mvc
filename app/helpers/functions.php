@@ -1,6 +1,20 @@
 <?php
 
-function printData($data, $die = true) {
+/**
+ * Verifica se existe um usuário logado
+ * @return bool Retorna true se existe um usuário logado, e false caso contrário.
+ */
+function checkSession(): bool {
+    return isset($_SESSION['user']);
+}
+
+/**
+ * Função auxiliar para Debug.  
+ * Essa função exibe o valor de uma variável, seja ela uma coleção ou um valor único. 
+ * @param mixed $data Valor a ser exibido
+ * @param bool $die Define se o código será interrompido (true é o valor padrão)
+ */
+function printData(mixed $data, bool $die = true) {
     
     /*A tag <pre> permite exibir os dados preservando espaços, 
     formatações e quebras de linha*/

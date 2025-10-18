@@ -28,7 +28,8 @@ abstract class BaseController {
         extract($data);
 
         // Monta o caminho da view
-        $viewPath = "../app/views/{$view}.php";
+        $viewPath = "../app/views/$view.php";
+        // $viewPath = dirname(__DIR__) . "/views/{$view}.php";
 
         // Verifica se a view existe
         if(file_exists($viewPath)) {

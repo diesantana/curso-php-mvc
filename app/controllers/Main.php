@@ -1,4 +1,5 @@
 <?php
+
 namespace bng\Controllers;
 
 use bng\Controllers\BaseController;
@@ -51,8 +52,6 @@ class Main extends BaseController
             unset($_SESSION['validation_errors']); // Remove a variável da sessão
         }
 
-        // echo 'Chegou aqui';
-
         // Exibe o formulário com os póssíveis erros
         $this->view('layouts/html_header'); // Estrutura inicial do HTML
         $this->view('login_frm', $data); // View responsável pelo formulário de login
@@ -61,37 +60,58 @@ class Main extends BaseController
     }
 
     /**
-     * Método responsável por tratar a submuissão do forumlário de login
+     * Método responsável por tratar a submissão do forumlário de login
      */
-    public function login_submit() {
-        // echo 'Chegou aqui';
+    public function login_submit()
+    {
+
         // Verifica se existe um usuário logado
-        if(checkSession()) {
+        if (checkSession()) {
             // Se existir um usuário logado, chama o método index
             // O método index() vai exibir a view de acordo com o perfil deste usuário logado.
             $this->index();
             return;
         }
 
-        // echo 'Chegou aqui';
-        // Nenhum usuário está logado! 
+        // Aqui nenhum usuário está logado! 
         // Verifica se o formulário foi submetido corretamente.
-        if($_SERVER['REQUEST_METHOD'] != 'POST') {
+        if ($_SERVER['REQUEST_METHOD'] != 'POST') {
             // Se o formulário não foi submetido corretamnte, chama o método index()
             $this->index();
             return;
         }
-        // echo 'Chegou aqui';
-        
+
         // Validação do formulário
-        $validation_errors = [];
-        if(empty($_POST['text_username']) || empty($_POST['text_password'])) {
+        $validation_errors = []; // Array que vai armazenar os possíveis erros
+
+        if (empty($_POST['text_username']) || empty($_POST['text_password'])) {
             $validation_errors[] = 'Username e password são obrigatórios!';
         }
 
+        // Aqui, já sabemos que os valores (username e password) não estão vazios, vamos tratar eles.
+        // Captura os valores enviados pelo usuário
+        $username = $_POST['text_username'];
+        $password = $_POST['text_password'];
+
+        // verifica se text_username é um email válido
+        if (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            // se filter_var retornar false, logo o email não é válido, temos um erro!
+            // Este erro deve ser adicionado ao array de erros ($validation_errors)
+            $validation_errors[] = 'O username deve ser um email válido.';
+        }
+
+        // Verifica se text_username está entre 5 e 50 caracteres
+        if (strlen($username) < 5 || strlen($username) > 50) {
+            $validation_errors[] = 'O username deve ter entre 5 e 50 caracteres.';
+        }
+
+        // Verifica se a senha está entre 6 e 12 caracteres
+        if (strlen($password) < 6 || strlen($password) > 12) {
+            $validation_errors[] = 'A password deve ter entre 6 e 12 caracteres.';
+        }
 
         // Se existir erros, vamos salvar na session
-        if(!empty($validation_errors)) {
+        if (!empty($validation_errors)) {
             $_SESSION['validation_errors'] = $validation_errors; // Salva os erros na session
             $this->login_frm(); // Chama o método responsável por exibir o formulário de login
             return;
@@ -99,13 +119,7 @@ class Main extends BaseController
             // vai ser exibido novamente, com os erros. 
         }
 
-        // Aqui não existe nenhum erro
-        // Captura os valores enviados pelo usuário
-        $username = $_POST['text_username'];
-        $password = $_POST['text_password'];
-
         // Apenas exibe os dados, ainda não estamos fazendo o login (Código temporário)
         echo $username . '<br>' . $password;
-
     }
 }

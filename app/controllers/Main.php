@@ -119,7 +119,14 @@ class Main extends BaseController
             // vai ser exibido novamente, com os erros. 
         }
 
-        // Apenas exibe os dados, ainda não estamos fazendo o login (Código temporário)
-        echo $username . '<br>' . $password;
+        // Valida as credencias de login
+        $modelAgents = new Agents();
+        $validatesLogin = $modelAgents->check_login($username, $password);
+
+        if($validatesLogin['status']) {
+            echo "Tudo OK! 🟩 Login realizado com sucesso";
+        }else {
+            echo "Nada feito! ❌ As credencias não são válidas";
+        }
     }
 }

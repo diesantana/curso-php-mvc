@@ -8,7 +8,6 @@ use bng\Models\Agents;
 class Main extends BaseController
 {
     /**
-     * Ponto de entrada do main controller.
      * Verifica se existe um usuário logado, se sim, carrega a view.
      * Se não existir usuário logado, redireciona para o formulário de login (Método login_frm())
      */
@@ -22,14 +21,13 @@ class Main extends BaseController
             return;
         }
 
-        // Se existir usuário logado
+        // Se existir usuário logado, carrega a view
         $this->view('layouts/html_header'); // Estrutura inicial do HTML
         echo '<h3 class="text-white text-center">Olá mundo</h3>'; // Exibe um 'Hello world' (código temporário)
         $this->view('layouts/html_footer'); // Estrutura inicial do HTML
     }
 
     /**
-     * Lógica para apresentar o formulário de login.
      * Método responsável por apresentar o formulário de login com as possíveis mensagens de erro.
      */
     public function login_frm()
@@ -42,11 +40,11 @@ class Main extends BaseController
             return;
         }
 
-        // Se não existir usuário logado, verifica se existem erros.
+        // Se não existir usuário logado, verifica se existem erros salvos na session.
         $data = []; // Armazena possíveis mensagens erro
 
-        // Se existir erros, armazena em $data[] e apaga os erros da sessão
-        // Os erros serão excluídos da sessão pois eles já estão sendo tratados.
+        // Se existir erros na session, armazena em $data[] e apaga os erros da sessão
+        // Os erros serão excluídos da sessão pois eles já estão sendo tratados e exibidos aqui.
         if (!empty($_SESSION['validation_errors'])) {
             $data['validation_errors'] = $_SESSION['validation_errors']; // Atribui os erros ao array $data
             unset($_SESSION['validation_errors']); // Remove a variável da sessão
@@ -119,10 +117,14 @@ class Main extends BaseController
             // vai ser exibido novamente, com os erros. 
         }
 
+        // Aqui não tem nenhum erro de validação, os campos foram preenchidos corretamente.
         // Valida as credencias de login
         $modelAgents = new Agents();
-        $validatesLogin = $modelAgents->check_login($username, $password);
+        $validatesLogin = $modelAgents->check_login($username, $password); // Verifica se o login é válido
 
+        // Em caso de Login inválido, o erro é salvo na sessão. 
+
+        // Se login for válido, os dados do user vão ser armazenados na sessão 
         if($validatesLogin['status']) {
             echo "Tudo OK! 🟩 Login realizado com sucesso";
         }else {

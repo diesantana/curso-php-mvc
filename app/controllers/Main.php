@@ -43,11 +43,18 @@ class Main extends BaseController
         // Se não existir usuário logado, verifica se existem erros salvos na session.
         $data = []; // Armazena possíveis mensagens erro
 
-        // Se existir erros na session, armazena em $data[] e apaga os erros da sessão
+        // Se existir erros de validação na session, armazena em $data[] e apaga os erros da sessão
         // Os erros serão excluídos da sessão pois eles já estão sendo tratados e exibidos aqui.
         if (!empty($_SESSION['validation_errors'])) {
             $data['validation_errors'] = $_SESSION['validation_errors']; // Atribui os erros ao array $data
             unset($_SESSION['validation_errors']); // Remove a variável da sessão
+        }
+
+        // Se existir erros do servidor na session, armazena em $data[] e apaga os erros da sessão
+        // Os erros serão excluídos da sessão pois eles já estão sendo tratados e exibidos aqui.
+        if (!empty($_SESSION['server_error'])) {
+            $data['server_error'] = $_SESSION['server_error']; // Atribui os erros ao array $data
+            unset($_SESSION['server_error']); // Remove a variável da sessão
         }
 
         // Exibe o formulário com os póssíveis erros
@@ -122,13 +129,25 @@ class Main extends BaseController
         $modelAgents = new Agents();
         $validatesLogin = $modelAgents->check_login($username, $password); // Verifica se o login é válido
 
-        // Em caso de Login inválido, o erro é salvo na sessão. 
+        // Validação das credenciais de login
+        $server_errors = []; // Array que vai armazenar os possíveis erros no servidor
 
-        // Se login for válido, os dados do user vão ser armazenados na sessão 
-        if($validatesLogin['status']) {
-            echo "Tudo OK! 🟩 Login realizado com sucesso";
-        }else {
-            echo "Nada feito! ❌ As credencias não são válidas";
+        // Em caso de Login inválido, o erro é salvo na sessão.
+        if (!$validatesLogin['status']) {
+            $server_errors[] = 'Login inválido!';
         }
+
+        // Se existir erros nas credenciais de login, vamos salvar na session
+        if (!empty($server_errors)) {
+            $_SESSION['server_error'] = $server_errors; // Salva o erro na sessão
+            $this->login_frm(); // Chama o método responsável por exibir o formulário de login
+            return;
+        }
+
+
+        // Se login for válido, vamos buscar os dados do usuárioe e armazená-los na sessão 
+        $loggedUserData = $modelAgents->get_data_user($username);
+        // Por enquanto estamos apenas exibindo os dados
+        printData($loggedUserData);
     }
 }

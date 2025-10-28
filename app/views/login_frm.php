@@ -28,9 +28,19 @@
                                 <a href="#">Esqueci-me da password!</a>
                             </div>
 
+                            <!-- Exibe erros de validação -->
                             <?php if(!empty($validation_errors)):?>
                                 <div class="alert alert-danger p-2 text-center">
                                         <?php foreach($validation_errors as $error):?>
+                                            <p><?= $error?></p>
+                                        <?php endforeach;?>
+                                    </div>
+                            <?php endif;?>
+                            
+                            <!-- Exibe erros do servidor -->
+                            <?php if(!empty($server_error)):?>
+                                <div class="alert alert-danger p-2 text-center">
+                                        <?php foreach($server_error as $error):?>
                                             <p><?= $error?></p>
                                         <?php endforeach;?>
                                     </div>

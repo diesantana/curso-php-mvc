@@ -89,4 +89,19 @@ class Agents extends BaseModel
             'data' => $resultQuery->results[0]
         ];
     }
+
+    /**
+     * Responsável por atualizar a data e hora do último acesso do usuário na base de dados. 
+     * Este método vai atualiza a coluna last_login na base de dados.
+     * @param string $id id do usuário a ser atualizado.
+     * @return midex Um Objeto do tipo stdClass contendo status e dados do usuário.
+     */
+    public function set_user_last_login(string $id): mixed {
+
+        $this->db_connect(); // Conexão com a base de dados
+        $params = [':id' => $id]; // Parâmetros usados na consulta
+        $sql = 'UPDATE agents SET last_login = NOW() WHERE id = :id'; // Comando SQL com os parâmetros
+
+        return $this->non_query($sql, $params); // Executa a query e retorna o resultado.
+    }
 }

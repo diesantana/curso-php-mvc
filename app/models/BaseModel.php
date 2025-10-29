@@ -50,4 +50,21 @@ abstract class BaseModel
         // O retorno é um objeto estruturado com status, results, etc.
         return $this->db->execute_query($sql, $params);
     }
+
+
+    /**
+     * Método auxiliar para executar queries SQL que atualizam a base de dados (INSERT, UPDATE, DELETE).
+     * Internamente, apenas encaminha a execução para o método execute_non_query() da classe Database, mantendo a lógica centralizada lá.
+     * @param string $sql comando SQL.
+     * @param array $params array que representa os parâmetros de substituição (Segurança / PDO).
+     * @return mixed Resultado da operação, contendo valores como: status (success / error), linhas afetadas e último ID. 
+     */
+    public function non_query(string $sql = "", $params = []) : mixed
+    {
+        // Encaminha o SQL para a classe Database executar
+        // O retorno é um objeto estruturado com status, results, etc.
+        return $this->db->execute_non_query($sql, $params);
+    }
+
+
 }

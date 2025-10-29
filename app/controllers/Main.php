@@ -132,7 +132,7 @@ class Main extends BaseController
         // Validação das credenciais de login
         $server_errors = []; // Array que vai armazenar os possíveis erros no servidor
 
-        // Em caso de Login inválido, o erro é salvo na sessão.
+        // Em caso de Login inválido, uma mensagem de erro é adicionada ao array $server_errors
         if (!$validatesLogin['status']) {
             $server_errors[] = 'Login inválido!';
         }
@@ -144,10 +144,21 @@ class Main extends BaseController
             return;
         }
 
-
-        // Se login for válido, vamos buscar os dados do usuárioe e armazená-los na sessão 
+        // Se login for válido, vamos buscar os dados do usuário e armazená-los na sessão 
         $loggedUserData = $modelAgents->get_data_user($username);
-        // Por enquanto estamos apenas exibindo os dados
-        printData($loggedUserData);
+
+        /* Aqui deve existir um tratamento para verificar se existe algum usuário em "$loggedUserData" 
+        antes de salvar o valor na session, porém não foi feito na aula. Refatorar depois ⚠️*/
+        $_SESSION['user'] = $loggedUserData['data'];
+
+        // Atualizando a base de dados
+        $modelAgents->set_user_last_login($_SESSION['user']->id);
+
+        // Redireciona a lógica para o método index()
+        $this->index();
+        /*
+        Em $this->index() o sistema vai verificar que tem um usuário logado (salvo na session), e carregar
+        a view de acordo com o perfil deste usuário.
+        */
     }
 }

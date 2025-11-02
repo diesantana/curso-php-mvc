@@ -59,7 +59,7 @@ abstract class BaseModel
      * @param array $params array que representa os parâmetros de substituição (Segurança / PDO).
      * @return mixed Resultado da operação, contendo valores como: status (success / error), linhas afetadas e último ID. 
      */
-    public function non_query(string $sql = "", $params = []) : mixed
+    public function non_query(string $sql, $params = []) : mixed
     {
         // Encaminha o SQL para a classe Database executar
         // O retorno é um objeto estruturado com status, results, etc.

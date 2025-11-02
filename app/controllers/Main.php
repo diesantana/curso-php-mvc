@@ -21,9 +21,14 @@ class Main extends BaseController
             return;
         }
 
+        // Recupera os dados do usuário para serem passados para a view
+        $data['user'] = $_SESSION['user'];
+
         // Se existir usuário logado, carrega a view
         $this->view('layouts/html_header'); // Estrutura inicial do HTML
-        echo '<h3 class="text-white text-center">Olá mundo</h3>'; // Exibe um 'Hello world' (código temporário)
+        $this->view('navbar', $data); // View navbar
+        $this->view('homepage', $data); //view homepage
+        $this->view('footer'); // view footer
         $this->view('layouts/html_footer'); // Estrutura inicial do HTML
     }
 
@@ -160,5 +165,17 @@ class Main extends BaseController
         Em $this->index() o sistema vai verificar que tem um usuário logado (salvo na session), e carregar
         a view de acordo com o perfil deste usuário.
         */
+    }
+
+    /**
+     * Remove o usuário da sessão fazendo o Logout.
+     * Após a remoção do usuário da sessão este método chama o método index() que vai carregar o formulário de login.
+     */
+    public function logout() {
+        // Remove o usuário da sessão
+        unset($_SESSION['user']);
+
+        // Redireciona o fluxo para o método index() que vai carregar o formulário de login
+        $this->index();
     }
 }

@@ -140,6 +140,8 @@ class Main extends BaseController
         // Em caso de Login inválido, uma mensagem de erro é adicionada ao array $server_errors
         if (!$validatesLogin['status']) {
             $server_errors[] = 'Login inválido!';
+            // registro de log
+            logger("$username - Lógin inválido", 'error');
         }
 
         // Se existir erros nas credenciais de login, vamos salvar na session
@@ -151,6 +153,8 @@ class Main extends BaseController
 
         // Se login for válido, vamos buscar os dados do usuário e armazená-los na sessão 
         $loggedUserData = $modelAgents->get_data_user($username);
+        // registro de log
+        logger("$username - Lógin com sucesso");
 
         /* Aqui deve existir um tratamento para verificar se existe algum usuário em "$loggedUserData" 
         antes de salvar o valor na session, porém não foi feito na aula. Refatorar depois ⚠️*/
@@ -171,7 +175,13 @@ class Main extends BaseController
      * Remove o usuário da sessão fazendo o Logout.
      * Após a remoção do usuário da sessão este método chama o método index() que vai carregar o formulário de login.
      */
-    public function logout() {
+    public function logout()
+    {
+        // registro de log
+        if(!empty($_SESSION['user'])){
+            logger($_SESSION['user']->name . ' - Fez logout');
+        }
+
         // Remove o usuário da sessão
         unset($_SESSION['user']);
 

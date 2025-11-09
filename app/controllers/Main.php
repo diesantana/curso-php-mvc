@@ -177,15 +177,18 @@ class Main extends BaseController
      */
     public function logout()
     {
-        // registro de log
-        if(!empty($_SESSION['user'])){
-            logger($_SESSION['user']->name . ' - Fez logout');
+        // Bloqueia acesso ao logout sem sessão válida
+        if (!checkSession()) {
+            $this->index();
         }
+
+        // registro de log do usuário que saiu
+        logger($_SESSION['user']->name . ' - Fez logout');
 
         // Remove o usuário da sessão
         unset($_SESSION['user']);
 
-        // Redireciona o fluxo para o método index() que vai carregar o formulário de login
-        $this->index();
+        // Volta para o formulário de login
+        return $this->index();
     }
 }

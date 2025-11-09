@@ -182,13 +182,15 @@ class Main extends BaseController
             $this->index();
         }
 
-        // registro de log do usuário que saiu
-        logger($_SESSION['user']->name . ' - Fez logout');
-
-        // Remove o usuário da sessão
-        unset($_SESSION['user']);
+        if(!empty($_SESSION['user'])) {
+            // registro de log do usuário que saiu
+            logger($_SESSION['user']->name . ' - Fez logout');
+            
+            // Remove o usuário da sessão
+            unset($_SESSION['user']);
+        }
 
         // Volta para o formulário de login
-        return $this->index();
+        $this->index();
     }
 }

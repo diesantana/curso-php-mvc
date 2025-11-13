@@ -5,7 +5,7 @@ namespace bng\Models;
 use bng\System\Database;
 
 /**
- * Responsável por acessar e manipular a base de dados, no que diz
+ * Model Responsável por acessar e manipular a base de dados, no que diz
  * respeito a tabela Agents. 
  */
 class Agents extends BaseModel
@@ -43,7 +43,7 @@ class Agents extends BaseModel
         }
 
         // Aqui já foi confirmado que o username existe, vamos verificar o password
-        if (!password_verify($password, $resultQuery->results[0]->passwrd)) {
+        if (!password_verify($password, $resultQuery->resultsQuery[0]->passwrd)) {
             return ['status' => false];
             // password_verify verifica se uma senha corresponde a um hash
             // Se a NÃO senha estiver correta, returna false e encerra a lógica deste método
@@ -86,7 +86,7 @@ class Agents extends BaseModel
         // Retorna o resultado da query com um status de sucesso
         return [
             'status' => 'success',
-            'data' => $resultQuery->results[0]
+            'data' => $resultQuery->resultsQuery[0]
         ];
     }
 
@@ -103,5 +103,35 @@ class Agents extends BaseModel
         $sql = 'UPDATE agents SET last_login = NOW() WHERE id = :id'; // Comando SQL com os parâmetros
 
         return $this->non_query($sql, $params); // Executa a query e retorna o resultado.
+    }
+
+    /**
+     * Busca todos os clientes de um agente específico. 
+     * Esse método é responsável por acessar a base de dados e trazer os clientes relacionados ao agente
+     * de acordo com o seu id.
+     * @param string $id ID do agente
+     * @return array Array associativo contendo dois valores:
+     * - 'status' da operação
+     * - 'data' contendo os dados da consulta. 
+     */
+    public function get_agent_clients(string $id) :array {
+        // Parâmetros da query (Segurança / PDO)
+        $params = ['id_agent' => $id];
+
+        // SQL 
+        $sql = "SELECT id, AES_ENCRYPT(name,'" . MYSQL_AES_KEY . "') name, gender, birthdade, AES_ENCRYPT(email, ,'" . MYSQL_AES_KEY . "') email, AES_ENCRYPT(phone,'" . MYSQL_AES_KEY . "') phone, interests, create_at, update_at, FROM clients WHERE id = :id_agent AND deleted_at IS NULL";
+
+        // Conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $resultsQuery = $this->query($sql, $params);
+
+        // Atualmente o retorno sempre tem o status success, independe da query encontrar registros ou não.	
+        return [
+            'status' => 'success',
+            'data' => $resultsQuery->results
+            // result vem da classe DataBase, é uma propriedade que contém o resultado da query
+        ];
     }
 }

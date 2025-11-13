@@ -16,12 +16,11 @@ abstract class BaseModel
     // Atributo que armazenará a instância da classe Database
     public $db;
 
-    // ========================================================================
-    // Método responsável por criar a conexão com o banco de dados
-    // ------------------------------------------------------------------------
-    // Ele utiliza as constantes definidas em config.php e passa os dados
-    // de configuração para a classe Database, que encapsula o uso do PDO.
-    // ========================================================================
+    /**
+     * Cria a conexão com o banco de dados.
+     * Este método utiliza as constantes definidas em config.php e passa os dados
+     * de configuração para a classe Database, que encapsula o uso do PDO.
+     */
     public function db_connect()
     {
         // Array de configuração com as credenciais do banco

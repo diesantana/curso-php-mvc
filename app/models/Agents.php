@@ -119,7 +119,7 @@ class Agents extends BaseModel
         $params = ['id_agent' => $id];
 
         // SQL 
-        $sql = "SELECT id, AES_ENCRYPT(name,'" . MYSQL_AES_KEY . "') name, gender, birthdade, AES_ENCRYPT(email, ,'" . MYSQL_AES_KEY . "') email, AES_ENCRYPT(phone,'" . MYSQL_AES_KEY . "') phone, interests, create_at, update_at, FROM clients WHERE id = :id_agent AND deleted_at IS NULL";
+        $sql = "SELECT id, AES_ENCRYPT(name,'" . MYSQL_AES_KEY . "') name, gender, birthdate, AES_ENCRYPT(email,'" . MYSQL_AES_KEY . "') email, AES_ENCRYPT(phone,'" . MYSQL_AES_KEY . "') phone, interests, created_at, updated_at FROM persons WHERE id = :id_agent AND deleted_at IS NULL";
 
         // Conexão com a base de dados
         $this->db_connect();

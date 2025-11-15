@@ -43,7 +43,7 @@ class Agents extends BaseModel
         }
 
         // Aqui já foi confirmado que o username existe, vamos verificar o password
-        if (!password_verify($password, $resultQuery->resultsQuery[0]->passwrd)) {
+        if (!password_verify($password, $resultQuery->results[0]->passwrd)) {
             return ['status' => false];
             // password_verify verifica se uma senha corresponde a um hash
             // Se a NÃO senha estiver correta, returna false e encerra a lógica deste método
@@ -86,7 +86,7 @@ class Agents extends BaseModel
         // Retorna o resultado da query com um status de sucesso
         return [
             'status' => 'success',
-            'data' => $resultQuery->resultsQuery[0]
+            'data' => $resultQuery->results[0]
         ];
     }
 

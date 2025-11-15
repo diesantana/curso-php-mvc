@@ -119,14 +119,14 @@ class Agents extends BaseModel
         $params = ['id_agent' => $id];
 
         // SQL 
-        $sql = "SELECT id, AES_ENCRYPT(name,'" . MYSQL_AES_KEY . "') name, gender, birthdate, AES_ENCRYPT(email,'" . MYSQL_AES_KEY . "') email, AES_ENCRYPT(phone,'" . MYSQL_AES_KEY . "') phone, interests, created_at, updated_at FROM persons WHERE id = :id_agent AND deleted_at IS NULL";
+        $sql = "SELECT id, AES_DECRYPT(name,'" . MYSQL_AES_KEY . "') name, gender, birthdate, AES_DECRYPT(email,'" . MYSQL_AES_KEY . "') email, AES_DECRYPT(phone,'" . MYSQL_AES_KEY . "') phone, interests, created_at, updated_at FROM persons WHERE id_agent = :id_agent AND deleted_at IS NULL";
 
         // Conexão com a base de dados
         $this->db_connect();
 
         // Executa a query
         $resultsQuery = $this->query($sql, $params);
-
+        
         // Atualmente o retorno sempre tem o status success, independe da query encontrar registros ou não.	
         return [
             'status' => 'success',

@@ -52,9 +52,11 @@ class Agent extends BaseController
 
         // armazena os dados do usuário logado
         $data['user'] = $_SESSION['user'];
+        // variável de controle flatpicker
+        $data['flatpickrControl'] = true;
 
         // Renderiza as views
-        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
         $this->view('insert_client_frm'); // formulário de cadastro
         $this->view('footer'); // footer

@@ -10,7 +10,7 @@
 
                         <hr>
 
-                        <form action="#" method="post">
+                        <form action="?ct=agent&mt=new_client_submit" method="post">
 
                             <div class="mb-3">
                                 <label for="text_name" class="form-label">Nome</label>
@@ -52,7 +52,7 @@
                             </div>
                             
                             <div class="mb-3 text-center">
-                                <a href="#" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
+                                <a href="?ct=main&mt=index" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
                                 <button type="submit" class="btn btn-secondary"><i class="fa-regular fa-floppy-disk me-2"></i>Guardar</button>
                             </div>
 

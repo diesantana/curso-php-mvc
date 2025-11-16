@@ -60,4 +60,22 @@ class Agent extends BaseController
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
+
+    /**
+     * Trata a submissão do formulário
+     */
+    public function new_client_submit()
+    {
+        // Verifica se o formulário foi submetido corretamente
+        if (
+            !checkSession() ||
+            $_SESSION['user']->profile != 'agent' ||
+            $_SERVER['REQUEST_METHOD'] != 'POST'
+        ) {
+            header('Location: index.php'); // redireciona para a página inicial (login)
+        }
+
+        // Exibe os dados enviados (CÓDIGO PROVISÓRIO)
+        printData($_POST);
+    }
 }

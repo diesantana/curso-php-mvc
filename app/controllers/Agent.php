@@ -3,6 +3,7 @@
 namespace bng\Controllers;
 
 use bng\Models\Agents;
+use DateTime;
 
 /**
  * Agent Controller - Responsável pelas operações relacionadas a entidade Agent 
@@ -54,11 +55,18 @@ class Agent extends BaseController
         $data['user'] = $_SESSION['user'];
         // variável de controle flatpicker
         $data['flatpickrControl'] = true;
+        
+        // Verifica se há mensagens de validação guardadas na sessão
+        if(!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors'];
+            // Limpa os erros de validação na sessão
+            unset($_SESSION['validationErrors']);
+        }
 
         // Renderiza as views
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
-        $this->view('insert_client_frm'); // formulário de cadastro
+        $this->view('insert_client_frm', $data); // formulário de cadastro
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
@@ -75,6 +83,78 @@ class Agent extends BaseController
             $_SERVER['REQUEST_METHOD'] != 'POST'
         ) {
             header('Location: index.php'); // redireciona para a página inicial (login)
+        }
+
+        // Armazena as mensagens de erro
+        $validationErrors = [];
+
+        // campos enviados pelo usuario
+        $name = trim($_POST['text_name'] ?? '');
+        $gender = trim($_POST['radio_gender'] ?? '');
+        $birthdate = trim($_POST['text_birthdate'] ?? '');
+        $email = trim($_POST['text_email'] ?? '');
+        $phone = trim($_POST['text_phone'] ?? '');
+        $interests = trim($_POST['text_interests'] ?? '');
+
+        // Validação do campo "Nome"
+        if (empty($name)) {
+            $validationErrors[] = 'Nome é de preenchimento obrigatório.';
+        } else {
+            if (strlen($name) < 3 || strlen($name) > 50) {
+                $validationErrors[] = 'O Nome deve ter entre 3 e 50 caracteres.';
+            }
+        }
+
+        // Validação do campo "Genero | Sexo"
+        if (empty($gender)) {
+            $validationErrors[] = 'É obrigatório definir o gênero.';
+        }
+
+        // Validação do campo "Data de nascimento"
+        if (empty($birthdate)) {
+            $validationErrors[] = 'Data de nascimento é obrigatória.';
+        } else {
+            // Verifica se a data preenchida está no formato correto.
+            $dateFilled = DateTime::createFromFormat('d-m-Y', $birthdate); // Cria um obj DateTime com a data preencida pelo user
+            // Se a data não estiver no formato correto '$dateFilled' == false
+            if (!$dateFilled) {
+                $validationErrors[] = 'A data de nascimento não está no formato correto.';
+            } else {
+                $today = new DateTime();
+                // Verifica se é uma data válida (é menor que a data atual).
+                if ($birthdate >= $today) {
+                    $validationErrors[] = 'A data de nascimento tem que ser anterior ao dia atual.';
+                }
+            }
+        }
+
+        // Validação do campo "EMAIL"
+        if (empty($email)) {
+            $validationErrors[] = 'Email é de preenchimento obrigatório.';
+        } else {
+            // Verifica se o email está no formato válido
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $validationErrors[] = 'Email não é valido.';
+            }
+        }
+
+        // Validação do campo "Telefone"
+        if (empty($phone)) {
+            $validationErrors[] = 'É obrigatório definir o telefone.';
+        } else {
+            // Verifica se o telefone começa por 9 e possui exatamente 9 dígitos
+            if (!preg_match("/^9{1}\d{8}$/", $phone)) {
+                $validationErrors[] = 'O telefone deve começar por 9 e ter 9 algarismos no total.';
+            }
+        }
+
+        // Salva os erros na sessão
+        if (!empty($validationErrors)) {
+            // Guarda as mensagens de erro na sessão para reapresentar no formulário
+            $_SESSION['validationErrors'] = $validationErrors;
+            // Recarrega o formulário de cadastro de clientes
+            $this->new_client_frm();
+            return;
         }
 
         // Exibe os dados enviados (CÓDIGO PROVISÓRIO)

@@ -56,9 +56,15 @@
                                 <button type="submit" class="btn btn-secondary"><i class="fa-regular fa-floppy-disk me-2"></i>Guardar</button>
                             </div>
 
-                            <div class="alert alert-danger p-2 text-center">
-                                [mensagem de erro]
-                            </div>
+                            <?php if(!empty($validationErrors)):?>
+                                <div class="alert alert-danger p-2 text-center">
+                                    <ul>
+                                        <?php foreach($validationErrors as $error):?>
+                                            <li><?= $error ?></li>
+                                        <?php endforeach;?>
+                                    </ul>
+                                </div>
+                            <?php endif;?>
 
                         </form>
                     </div>

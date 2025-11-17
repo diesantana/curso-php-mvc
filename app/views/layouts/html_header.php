@@ -17,7 +17,7 @@
     <!-- custom css -->
     <link rel="stylesheet" href="assets/app.css">
     <!-- flatpickr biblioteca para campos input de data-->
-    <?php if($flatpickrControl):?>
+    <?php if(isset($flatpickrControl)):?>
         <!-- Carrega os arquivos do flatpicker apenas se a var de controle existir -->
         <link rel="stylesheet" href="assets/flatpickr/flatpickr.min.css">
         <script src="assets/flatpickr/flatpickr.js"></script>

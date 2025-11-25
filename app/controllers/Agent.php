@@ -157,7 +157,21 @@ class Agent extends BaseController
             return;
         }
 
+        // Instancia o model responsável pelos agentes
+        $model = new Agents();
+        // Verifica se já existe um cliente com o mesmo nome para este agente
+        $result = $model->check_if_client_exists($name);
+
+        // Se o cliente já existir, cria um erro de servidor e retorna ao formulário
+        if($result['status']) {
+            $_SESSION['server_error'] = 'Já existe um cliente com esse nome.';
+
+            // Retorna ao formulário de novo cliente
+            $this->new_client_frm();
+            return;
+        }
+
         // Exibe os dados enviados (CÓDIGO PROVISÓRIO)
-        printData($_POST);
+        // printData($_POST);
     }
 }

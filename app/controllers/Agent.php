@@ -63,6 +63,13 @@ class Agent extends BaseController
             unset($_SESSION['validationErrors']);
         }
 
+        // Verifica se há mensagens de erro no servidor guardadas na sessão
+        if(!empty($_SESSION['serverErrors'])) {
+            $data['serverErrors'] = $_SESSION['serverErrors'];
+            // Limpa os erros do servidor na sessão
+            unset($_SESSION['serverErrors']);
+        }
+
         // Renderiza as views
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
@@ -162,9 +169,10 @@ class Agent extends BaseController
         // Verifica se já existe um cliente com o mesmo nome para este agente
         $result = $model->check_if_client_exists($name);
 
+        // printData($result);
         // Se o cliente já existir, cria um erro de servidor e retorna ao formulário
         if($result['status']) {
-            $_SESSION['server_error'] = 'Já existe um cliente com esse nome.';
+            $_SESSION['serverErrors'] = 'Já existe um cliente com esse nome.';
 
             // Retorna ao formulário de novo cliente
             $this->new_client_frm();
@@ -172,6 +180,6 @@ class Agent extends BaseController
         }
 
         // Exibe os dados enviados (CÓDIGO PROVISÓRIO)
-        // printData($_POST);
+        echo "Cadastrado";
     }
 }

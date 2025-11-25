@@ -57,6 +57,7 @@
                                 <button type="submit" class="btn btn-secondary"><i class="fa-regular fa-floppy-disk me-2"></i>Guardar</button>
                             </div>
 
+                            <!-- Exibe erros de validação -->
                             <?php if(!empty($validationErrors)):?>
                                 <div class="alert alert-danger p-2 text-center">
                                     <ul>
@@ -65,6 +66,11 @@
                                         <?php endforeach;?>
                                     </ul>
                                 </div>
+                            <?php endif;?>
+
+                            <!-- Exibe erros no servidor -->
+                            <?php if(!empty($serverErrors)):?>
+                                <div class="alert alert-danger p-2 text-center"><?= $serverErrors ?></div>
                             <?php endif;?>
 
                         </form>

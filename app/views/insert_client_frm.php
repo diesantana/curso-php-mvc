@@ -51,8 +51,9 @@
                                 <input type="text" class="form-control" name="text_interests" id="text_interests">
                             </div>
                             
+                            <!-- Sessão dos botões cancelar & guardar -->
                             <div class="mb-3 text-center">
-                                <a href="?ct=main&mt=index" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
+                                <a href="?ct=agent&mt=my_clients" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
                                 <button type="submit" class="btn btn-secondary"><i class="fa-regular fa-floppy-disk me-2"></i>Guardar</button>
                             </div>
 

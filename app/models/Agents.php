@@ -134,4 +134,39 @@ class Agents extends BaseModel
             // result vem da classe DataBase, é uma propriedade que contém o resultado da query
         ];
     }
+
+    /**
+     * Verifica se existe uma cliente cadastrado na base de dados.
+     * Verifica se existe uma cliente cadastrado na base de dados com base em um nome.
+     * @param string $name Nome do cliente a ser verificado.
+     * @return array 
+     * - "['status'] = true" Se o cliente já existe
+     * - "['status'] = false" Se o cliente não existe
+     */
+    public function check_if_client_exists($name) :array {
+        // Parâmetros para a query
+        $params = [
+            ':id_agent' => $_SESSION['user']->id,
+            ':client_name' => $name
+        ];
+
+        // Conexão com a base de dados
+        $this->db_connect();
+
+        // SQL
+        $sql = "SELECT id FROM persons WHERE AES_ENCRYPT(:client_name, '" . MYSQL_AES_KEY . "') = name AND id_agent = :id_agent";
+
+        // Executa a query
+        $result = $this->query($sql, $params);
+
+        // Verifica se encontrou algum registro
+        if($result->affected_rows == 0) {
+            // Se não encontrou registros com o mesmo nome, retorna false
+            return ['status' => false]; 
+        }
+        
+        // Se encontrou algum registro com o mesmo nome, retorna true
+        return ['status' => true];
+    }   
+
 }

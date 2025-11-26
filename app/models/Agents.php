@@ -3,6 +3,7 @@
 namespace bng\Models;
 
 use bng\System\Database;
+use DateTime;
 
 /**
  * Model Responsável por acessar e manipular a base de dados, no que diz
@@ -167,6 +168,51 @@ class Agents extends BaseModel
         
         // Se encontrou algum registro com o mesmo nome, retorna true
         return ['status' => true];
-    }   
+    }
+
+    /**
+     * Adiciona um novo cliente na base de dados.
+     * @param array $post_data Os dados submetidos pelo usuário para cadastro, via método $_POST
+     * @return void Não retorna nada, apenas insere o cliente na base de dados.
+     */
+    public function add_new_client_to_database(array $post_data) {
+
+        // Converte a data recebida do formulário para objeto DateTime
+        $birthdate = DateTime::createFromFormat('d-m-Y', $post_data['text_birthdate']);
+
+        // parâmetros para a query SQL (Segurança / PDO)
+        $params = [
+            ':name' => $post_data['text_name'],
+            ':gender' => $post_data['radio_gender'],
+            ':birthdate' => $birthdate->format('Y-m-d'),
+            ':email' => $post_data['text_email'],
+            ':phone' => $post_data['text_phone'],
+            ':interests' => $post_data['text_interests'],
+            ':id_agent' => $_SESSION['user']->id,
+            
+        ];
+
+        // Query SQL 
+        $sql = 
+        "INSERT INTO persons VALUES(
+            0,
+            AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "'),
+            :gender,
+            :birthdate,
+            AES_ENCRYPT(:email, '" . MYSQL_AES_KEY . "'),
+            AES_ENCRYPT(:phone, '" . MYSQL_AES_KEY . "'),
+            :interests,
+            :id_agent,
+            NOW(),
+            NOW(),
+            NULL
+        )";
+        
+        // Conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $this->non_query($sql, $params);
+    }
 
 }

@@ -179,7 +179,10 @@ class Agent extends BaseController
             return;
         }
 
-        // Exibe os dados enviados (CÓDIGO PROVISÓRIO)
-        echo "Cadastrado";
+        // Salva o cliente na base de dados
+        $model->add_new_client_to_database($_POST);
+
+        // Redireciona para a lista de clientes
+        $this->my_clients();
     }
 }

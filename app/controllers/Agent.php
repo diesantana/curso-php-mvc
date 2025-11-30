@@ -1,7 +1,8 @@
 <?php
-
+declare(strict_types=1);
 namespace bng\Controllers;
 
+use bng\DTO\ClientDTO;
 use bng\Models\Agents;
 use DateTime;
 
@@ -55,16 +56,16 @@ class Agent extends BaseController
         $data['user'] = $_SESSION['user'];
         // variável de controle flatpicker
         $data['flatpickrControl'] = true;
-        
+
         // Verifica se há mensagens de validação guardadas na sessão
-        if(!empty($_SESSION['validationErrors'])) {
+        if (!empty($_SESSION['validationErrors'])) {
             $data['validationErrors'] = $_SESSION['validationErrors'];
             // Limpa os erros de validação na sessão
             unset($_SESSION['validationErrors']);
         }
 
         // Verifica se há mensagens de erro no servidor guardadas na sessão
-        if(!empty($_SESSION['serverErrors'])) {
+        if (!empty($_SESSION['serverErrors'])) {
             $data['serverErrors'] = $_SESSION['serverErrors'];
             // Limpa os erros do servidor na sessão
             unset($_SESSION['serverErrors']);
@@ -171,7 +172,7 @@ class Agent extends BaseController
 
         // printData($result);
         // Se o cliente já existir, cria um erro de servidor e retorna ao formulário
-        if($result['status']) {
+        if ($result['status']) {
             $_SESSION['serverErrors'] = 'Já existe um cliente com esse nome.';
 
             // Retorna ao formulário de novo cliente
@@ -179,8 +180,22 @@ class Agent extends BaseController
             return;
         }
 
+        // Converte a data de nacimento para DateTime
+        $birthdateObj = DateTime::createFromFormat('d-m-Y', $birthdate);
+
+        // Instância o obj ClientDTO
+        $clientDTO = new ClientDTO(
+            $name,
+            $gender,
+            $birthdateObj,
+            $email,
+            $phone,
+            $_SESSION['user']->id,
+            $interests
+        );
+
         // Salva o cliente na base de dados
-        $model->add_new_client_to_database($_POST);
+        $model->add_new_client_to_database($clientDTO);
 
         // Redireciona para a lista de clientes
         $this->my_clients();

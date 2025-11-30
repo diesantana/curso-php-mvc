@@ -15,7 +15,8 @@
         "psr-4": {
             "bng\\Controllers\\": "app/controllers/",
             "bng\\Models\\": "app/models/",
-            "bng\\System\\": "app/system/"
+            "bng\\System\\": "app/system/",
+            "bng\\DTO\\": "app/dto/"
         },
         "files": [
             "app/config.php",

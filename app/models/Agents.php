@@ -2,6 +2,7 @@
 
 namespace bng\Models;
 
+use bng\DTO\ClientDTO;
 use bng\System\Database;
 use DateTime;
 
@@ -115,7 +116,7 @@ class Agents extends BaseModel
      * - 'status' da operação
      * - 'data' contendo os dados da consulta. 
      */
-    public function get_agent_clients(string $id) :array {
+    public function get_agent_clients(int $id) :array {
         // Parâmetros da query (Segurança / PDO)
         $params = ['id_agent' => $id];
 
@@ -175,21 +176,20 @@ class Agents extends BaseModel
      * @param array $post_data Os dados submetidos pelo usuário para cadastro, via método $_POST
      * @return void Não retorna nada, apenas insere o cliente na base de dados.
      */
-    public function add_new_client_to_database(array $post_data) {
+    public function add_new_client_to_database(ClientDTO $client) {
 
-        // Converte a data recebida do formulário para objeto DateTime
-        $birthdate = DateTime::createFromFormat('d-m-Y', $post_data['text_birthdate']);
+        // // Converte a data recebida do formulário para objeto DateTime
+        // $birthdate = DateTime::createFromFormat('d-m-Y', $post_data['text_birthdate']);
 
         // parâmetros para a query SQL (Segurança / PDO)
         $params = [
-            ':name' => $post_data['text_name'],
-            ':gender' => $post_data['radio_gender'],
-            ':birthdate' => $birthdate->format('Y-m-d'),
-            ':email' => $post_data['text_email'],
-            ':phone' => $post_data['text_phone'],
-            ':interests' => $post_data['text_interests'],
-            ':id_agent' => $_SESSION['user']->id,
-            
+            ':name' => $client->name,
+            ':gender' => $client->gender,
+            ':birthdate' => $client->birthdate->format('Y-m-d'),
+            ':email' => $client->email,
+            ':phone' => $client->phone,
+            ':interests' => $client->interests,
+            ':id_agent' => $client->agentId
         ];
 
         // Query SQL 

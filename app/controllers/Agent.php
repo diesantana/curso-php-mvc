@@ -200,4 +200,14 @@ class Agent extends BaseController
         // Redireciona para a lista de clientes
         $this->my_clients();
     }
+
+    public function edit_client(string $id) {
+        // echo 'Editando o cliente ID: ' . $id;
+        echo 'Editando o cliente ID: ' . aes_decrypt($id);
+    }
+
+    public function delete_client(string $id) {
+        // echo 'Deletando o cliente ID: ' . $id;
+        echo 'Deletando o cliente ID: ' . aes_decrypt($id);
+    }
 }

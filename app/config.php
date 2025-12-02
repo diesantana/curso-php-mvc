@@ -13,3 +13,8 @@ define('MYSQL_AES_KEY', 'Vduu47qL51hLn6bkYkY6NlO1nivsmdfD');
 
 // Destino do arquivo de log
 define('LOGS_PATH', __DIR__ . '/../logs/app.log');
+
+// OpenSSL
+define('OPENSSL_KEY', 'H0SDRQzIGqclX2kbYBk9xspdn9U5f3Wa');
+define('OPENSSL_IV', 'BzKAbjuREsHgnw56');
+define('OPENSSL_ALGORITHM', 'AES-256-CBC');

@@ -86,3 +86,39 @@ function logger(string $message, string $level = 'info')
             break;
     }
 }
+
+/**
+ * Encripta um valor usando OPENSSL
+ * @param string $value valor a ser encriptado
+ * @return string Valor encriptado e convertido para hexadecimal
+ */
+function aes_encrypt(string $value): string {
+    // Encrypt em binário
+    $encrypted = openssl_encrypt($value, OPENSSL_ALGORITHM, OPENSSL_KEY, OPENSSL_RAW_DATA, OPENSSL_IV);
+    // OPENSSL_RAW_DATA indica que o resultado vem em binário.
+
+    // Converte o valor para hexadecimal para ficar 'limpo'
+    return bin2hex($encrypted);
+    // o Valor binário pode conter caracteres estranhos, a conversão para hexadecimal
+    // é só um capricho para deixar o valor limpo. 
+}
+
+/**
+ * Desencripta um valor gerado pelo método aes_encrypt()
+ * @param string $hexValue valor em hexadecimal a ser desencriptado
+ * @return string Valor em string legível se a conversão for concluída com sucesso
+ * @return bool false se a conversão falhar
+ */
+function aes_decrypt(string $hexValue): string|false {
+    // Verifica se a string hex tem comprimento par
+    // A string hex deve ter comprimento par.
+    if(strlen($hexValue) % 2 !== 0) {
+        return false; // valor inválido
+    }
+
+    $binaryValue = hex2bin($hexValue); // Converte o valor para binário
+
+    // Retorna o valor convertido
+    return openssl_decrypt($binaryValue, OPENSSL_ALGORITHM, OPENSSL_KEY, OPENSSL_RAW_DATA, OPENSSL_IV);
+}
+

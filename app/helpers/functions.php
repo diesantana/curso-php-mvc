@@ -122,3 +122,15 @@ function aes_decrypt(string $hexValue): string|false {
     return openssl_decrypt($binaryValue, OPENSSL_ALGORITHM, OPENSSL_KEY, OPENSSL_RAW_DATA, OPENSSL_IV);
 }
 
+/**
+ * Obtem o nome do usuário logado.
+ * @return string Nome do usuário logado. 
+ */
+function get_active_username() : string {
+
+    if(checkSession() && isset($_SESSION['user']->name)) {
+        return $_SESSION['user']->name;
+    }
+
+    return 'Desconhecido';
+}

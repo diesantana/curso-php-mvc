@@ -167,10 +167,10 @@ class Agent extends BaseController
 
         // Instancia o model responsável pelos agentes
         $model = new Agents();
+
         // Verifica se já existe um cliente com o mesmo nome para este agente
         $result = $model->check_if_client_exists($name);
 
-        // printData($result);
         // Se o cliente já existir, cria um erro de servidor e retorna ao formulário
         if ($result['status']) {
             $_SESSION['serverErrors'] = 'Já existe um cliente com esse nome.';
@@ -196,6 +196,10 @@ class Agent extends BaseController
 
         // Salva o cliente na base de dados
         $model->add_new_client_to_database($clientDTO);
+
+        // registra a criação do novo cliente no arquivo de logs
+        $loggerMsg = get_active_username() . ' - adicionou novo cliente: ' . $name;
+        logger($loggerMsg);
 
         // Redireciona para a lista de clientes
         $this->my_clients();

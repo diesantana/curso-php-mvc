@@ -253,6 +253,10 @@ class Agent extends BaseController
         $this->view('layouts/html_footer');
     }
 
+    public function edit_client_submit() {
+        printData($_POST);
+    }
+
     public function delete_client(string $id)
     {
         // echo 'Deletando o cliente ID: ' . $id;

@@ -215,4 +215,34 @@ class Agents extends BaseModel
         $this->non_query($sql, $params);
     }
 
+    /**
+     * Busca um cliente na base de dados com base em seu ID.
+     * @param int $id Id do cliente a ser buscado
+     * @return array Array associativo contendo dois possíveis valores:
+     * - 1. Se Sucesso: Array com 'status' = sucesso e 'data' contendo os dados do cliente
+     * - 2. Se Erro: Array com 'status' = error
+     */
+    public function get_client_data(int $id) : array {
+        // Prepara a query
+        $params = [':id' => $id];
+
+        $sql = "SELECT id, AES_DECRYPT(name, '" . MYSQL_AES_KEY . "') AS name, gender, birthdate, 
+            AES_DECRYPT(email, '" . MYSQL_AES_KEY . "') AS email, AES_DECRYPT(phone, '" . MYSQL_AES_KEY . "') AS phone, 
+            interests FROM persons WHERE id = :id";
+
+        // Conexão com a base de dados 
+        $this->db_connect();
+
+        // Executa a query
+        $results = $this->query($sql, $params);
+
+        // Verifica se houve um erro na query
+        if($results->affected_rows == 0) {
+            return ['status' => 'error'];
+        }
+
+        // retorna os dados do cliente
+        return ['status' => 'success', 'data' => $results->results[0]];
+    }
+
 }

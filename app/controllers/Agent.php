@@ -1,5 +1,7 @@
 <?php
+
 declare(strict_types=1);
+
 namespace bng\Controllers;
 
 use bng\DTO\ClientDTO;
@@ -205,12 +207,54 @@ class Agent extends BaseController
         $this->my_clients();
     }
 
-    public function edit_client(string $id) {
-        // echo 'Editando o cliente ID: ' . $id;
-        echo 'Editando o cliente ID: ' . aes_decrypt($id);
+    /**
+     * Responsável por renderizar o formulário de edição de clientes.
+     * @param string $id ID criptografado do cliente a ser editado.
+     */
+    public function edit_client(string $id)
+    {
+        // Verifica se existe uma sessão ativa e se essa sessão pertence a um agente
+        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+            header('Location: index.php'); // redireciona para a página inicial
+            return;
+        }
+
+        $id_client = aes_decrypt($id); // Desencripta o id do cliente
+
+        // Validando o id após a desencriptação
+        if (!$id_client) {
+            // ID do cliente inválido,  redireciona para o index
+            header('Location: index.php');
+            return;
+        }
+
+        // Instancia o model e faz a busca na base de dados
+        $model = new Agents();
+        $results = $model->get_client_data((int) $id_client);
+
+        // Verifica se a consulta foi bem sucessida 
+        if ($results['status'] == 'error') {
+            // Dados do cliente inválido ou não encontrados 
+            header('Location: index.php');
+            return;
+        }
+
+        // Prepara os dados que serão enviados para a view
+        $data = [];
+        $data['client'] = $results['data'];
+        $data['user'] = $_SESSION['user'];
+        $data['flatpickrControl'] = true;
+
+        // Renderiza as views
+        $this->view('layouts/html_header', $data);
+        $this->view('navbar', $data);
+        $this->view('edit_client_frm', $data);
+        $this->view('footer');
+        $this->view('layouts/html_footer');
     }
 
-    public function delete_client(string $id) {
+    public function delete_client(string $id)
+    {
         // echo 'Deletando o cliente ID: ' . $id;
         echo 'Deletando o cliente ID: ' . aes_decrypt($id);
     }

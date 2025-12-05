@@ -13,7 +13,7 @@
                         <form action="?ct=agent&mt=edit_client_submit" method="post">
 
                         <!-- ID  -->
-                        <input type="hidden" name="id_client" value="<?=htmlspecialchars($client->id)?>">
+                        <input type="hidden" name="id_client" value="<?=aes_encrypt($client->id)?>">
                         
                         <!-- NOME  -->
                         <div class="mb-3">

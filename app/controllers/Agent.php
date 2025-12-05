@@ -242,6 +242,8 @@ class Agent extends BaseController
         // Prepara os dados que serão enviados para a view
         $data = [];
         $data['client'] = $results['data'];
+        // Formata a data de acordo com o padrão esperado pelo flatpickr
+        $data['client']->birthdate = date('d-m-Y', strtotime($data['client']->birthdate));
         $data['user'] = $_SESSION['user'];
         $data['flatpickrControl'] = true;
 

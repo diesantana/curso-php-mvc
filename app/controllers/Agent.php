@@ -245,6 +245,14 @@ class Agent extends BaseController
         $data['user'] = $_SESSION['user'];
         $data['flatpickrControl'] = true;
 
+        // Verifica se existem erros na sessão
+        if(!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors']; 
+            unset($_SESSION['validationErrors']); 
+            // Armazena os erros na var $data para serem utilizados na view
+            // Remove os erros da sessão para não serem utilizado em outras submissões
+        }
+
         // Renderiza as views
         $this->view('layouts/html_header', $data);
         $this->view('navbar', $data);
@@ -253,8 +261,107 @@ class Agent extends BaseController
         $this->view('layouts/html_footer');
     }
 
-    public function edit_client_submit() {
-        printData($_POST);
+    /**
+     * Trata a submissão do formulário de edição de clientes.
+     */
+    public function edit_client_submit()
+    {
+        // Verifica se o formulário foi submetido corretamente
+        if (!checkSession() || $_SESSION['user']->profile != 'agent' || $_SERVER['REQUEST_METHOD'] != 'POST') {
+            header('Location: index.php'); // Redireciona para a página inicial
+            return;
+        }
+
+        // Array que vai armazenar as mensagens de erro
+        $validationErrors = [];
+
+        // campos enviados pelo usuario
+        $name = trim($_POST['text_name'] ?? '');
+        $gender = trim($_POST['radio_gender'] ?? '');
+        $birthdate = trim($_POST['text_birthdate'] ?? '');
+        $email = trim($_POST['text_email'] ?? '');
+        $phone = trim($_POST['text_phone'] ?? '');
+        $interests = trim($_POST['text_interests'] ?? '');
+
+        // Validação do campo "Nome"
+        if (empty($name)) {
+            $validationErrors[] = 'Nome é de preenchimento obrigatório.';
+        } else {
+            if (strlen($name) < 3 || strlen($name) > 50) {
+                $validationErrors[] = 'O Nome deve ter entre 3 e 50 caracteres.';
+            }
+        }
+
+        // Validação do campo "Genero | Sexo"
+        if (empty($gender)) {
+            $validationErrors[] = 'É obrigatório definir o gênero.';
+        }
+
+        // Validação do campo "Data de nascimento"
+        if (empty($birthdate)) {
+            $validationErrors[] = 'Data de nascimento é obrigatória.';
+        } else {
+            // Verifica se a data preenchida está no formato correto.
+            $dateFilled = DateTime::createFromFormat('d-m-Y', $birthdate); // Cria um obj DateTime com a data preencida pelo user
+            // Se a data não estiver no formato correto '$dateFilled' == false
+            if (!$dateFilled) {
+                $validationErrors[] = 'A data de nascimento não está no formato correto.';
+            } else {
+                $today = new DateTime();
+                // Verifica se é uma data válida (é menor que a data atual).
+                if ($birthdate >= $today) {
+                    $validationErrors[] = 'A data de nascimento tem que ser anterior ao dia atual.';
+                }
+            }
+        }
+
+        // Validação do campo "EMAIL"
+        if (empty($email)) {
+            $validationErrors[] = 'Email é de preenchimento obrigatório.';
+        } else {
+            // Verifica se o email está no formato válido
+            if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                $validationErrors[] = 'Email não é valido.';
+            }
+        }
+
+        // Validação do campo "Telefone"
+        if (empty($phone)) {
+            $validationErrors[] = 'É obrigatório definir o telefone.';
+        } else {
+            // Verifica se o telefone começa por 9 e possui exatamente 9 dígitos
+            if (!preg_match("/^9{1}\d{8}$/", $phone)) {
+                $validationErrors[] = 'O telefone deve começar por 9 e ter 9 algarismos no total.';
+            }
+        }
+
+        // Verifica se o ID foi enviado via método POST
+        if (empty($_POST['id_client'])) {
+            header('Location: index.php');
+            return;
+        }
+
+        // Desencripta o Id
+        $id_client = aes_decrypt($_POST['id_client']);
+
+        // Verifica se o ID é válido (Foi desencriptado corretamente)
+        if (!$id_client) {
+            header('Location: index.php');
+            return;
+        }
+
+        // Salva os erros na sessão
+        if (!empty($validationErrors)) {
+            // Guarda as mensagens de erro na sessão para reapresentar no formulário
+            $_SESSION['validationErrors'] = $validationErrors;
+            // Recarrega o formulário de edição de clientes
+            $this->edit_client(aes_encrypt($id_client));
+            return;
+        }
+
+        // Neste ponto, todas as validações passaram
+        // (a lógica de atualização no banco será implementada aqui)
+        die('ok');
     }
 
     public function delete_client(string $id)

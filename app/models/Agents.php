@@ -55,7 +55,6 @@ class Agents extends BaseModel
         return ['status' => true];
     }
 
-
     /**
      * Busca os dados do usuário com base em um username.
      * @param string $username username do usuário a ser buscado.
@@ -243,6 +242,44 @@ class Agents extends BaseModel
 
         // retorna os dados do cliente
         return ['status' => 'success', 'data' => $results->results[0]];
+    }
+
+    /**
+     * Verifica se já existe outro cliente com o mesmo nome na base de dados.
+     * @param int $id ID do cliente que está sendo editado.
+     * @param string $name nome digitado no formulário.
+     * @return array Array contendo status igual a true se o nome já existe, ou, 
+     * false se o nome ainda não existe na base de dados. 
+     */
+    public function check_if_name_exists(int $id, string $name) : array{
+
+        // Parâmetros para a query
+        $params = [
+            ':id' => $id,
+            ':name' => $name,
+            ':id_agent' => $_SESSION['user']->id
+        ];
+
+        // SQL 
+        $sql = "SELECT id 
+            FROM persons 
+            WHERE id <> :id 
+            AND id_agent = :id_agent 
+            AND AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "') = name";
+
+        // Abre a conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $results = $this->query($sql, $params);
+
+        // Se a query devolveu linhas, já existem um cliente com o mesmo nome
+        if($results->affected_rows != 0) {
+            return ['status' => true]; // existe conflito de nome
+        } else {
+            return ['status' => false]; // nome está livre
+        }
+
     }
 
 }

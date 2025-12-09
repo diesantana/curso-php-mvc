@@ -282,4 +282,45 @@ class Agents extends BaseModel
 
     }
 
+    /**
+     * Atualiza os dados do cliente na base de dados. 
+     * Esse método não faz validação nem verifica regras de negócio; 
+     * ele apenas atualiza os dados assumindo que o controller já fez todas as checagens antes.
+     * @param int $id ID do cliente que está sendo editado.
+     * @param ClientDTO $client Dados atualizados do cliente.
+     * @return void Esse método não retornada nada, apenas atualiza os dados na base de dados.
+     */
+    public function update_client_data(int $id, ClientDTO $client) {
+        // Prepara a query
+        $params = [
+            ':id' => $id,
+            ':name' => $client->name,
+            ':gender' => $client->gender,
+            ':birthdate' => $client->birthdate->format('Y-m-d'),
+            ':email' => $client->email,
+            ':phone' => $client->phone,
+            ':interests' => $client->interests
+        ];
+
+        $sql = "UPDATE persons SET 
+                    name = AES_ENCRYPT(:name '" . MYSQL_AES_KEY . "'),
+                    gender = :gender,
+                    birthdate = :birthdate,
+                    email = AES_ENCRYPT(:email '" . MYSQL_AES_KEY . "'),
+                    phone = AES_ENCRYPT(:phone '" . MYSQL_AES_KEY . "'),
+                    interests = :interests,
+                    update_at = NOW()
+                    WHERE id = :id";
+        
+        // Abre a conexão com a base de dados
+        $this->db_connect();
+
+        // Executa o UPDATE
+        $this->non_query($sql, $params);   
+        // Aqui, eu observei que, para melhoria futura, não temos um retorno do método non_query,
+        // caso a query de um erro, ele não vai ser tratado, ocasionando efeitos indesejados. ⚠️
+        // Author: Diego 09/12/25 ás 19:20  
+    }
+
+
 }

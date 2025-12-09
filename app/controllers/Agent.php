@@ -247,10 +247,18 @@ class Agent extends BaseController
         $data['user'] = $_SESSION['user'];
         $data['flatpickrControl'] = true;
 
-        // Verifica se existem erros na sessão
+        // Verifica se existem erros de validação na sessão
         if (!empty($_SESSION['validationErrors'])) {
             $data['validationErrors'] = $_SESSION['validationErrors'];
             unset($_SESSION['validationErrors']);
+            // Armazena os erros na var $data para serem utilizados na view
+            // Remove os erros da sessão para não serem utilizado em outras submissões
+        }
+
+        // Verifica se existem erros do servidor na sessão
+        if (!empty($_SESSION['serverErrors'])) {
+            $data['serverErrors'] = $_SESSION['serverErrors'];
+            unset($_SESSION['serverErrors']);
             // Armazena os erros na var $data para serem utilizados na view
             // Remove os erros da sessão para não serem utilizado em outras submissões
         }

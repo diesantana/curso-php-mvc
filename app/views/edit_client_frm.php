@@ -65,13 +65,22 @@
                                 <button type="submit" class="btn btn-secondary"><i class="fa-regular fa-floppy-disk me-2"></i>Atualizar</button>
                             </div>
 
-                            <!-- MENSAGENS DE ERRO -->
+                            <!-- MENSAGENS DE ERROS DE VALIDAÇÃO-->
                             <?php if(isset($validationErrors)): ?>
                                 <div class="alert alert-danger p-2 text-center">
                                     <ul>
                                         <?php foreach($validationErrors as $error):?>
                                             <li><?=  $error ?></li>
                                         <?php endforeach;?>
+                                    </ul>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- MENSAGENS DE ERROS DO SERVIDOR-->
+                            <?php if(isset($serverErrors)): ?>
+                                <div class="alert alert-danger p-2 text-center">
+                                    <ul>
+                                            <li><?=  $serverErrors ?></li>
                                     </ul>
                                 </div>
                             <?php endif; ?>

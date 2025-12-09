@@ -248,9 +248,9 @@ class Agent extends BaseController
         $data['flatpickrControl'] = true;
 
         // Verifica se existem erros na sessão
-        if(!empty($_SESSION['validationErrors'])) {
-            $data['validationErrors'] = $_SESSION['validationErrors']; 
-            unset($_SESSION['validationErrors']); 
+        if (!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors'];
+            unset($_SESSION['validationErrors']);
             // Armazena os erros na var $data para serem utilizados na view
             // Remove os erros da sessão para não serem utilizado em outras submissões
         }
@@ -358,12 +358,44 @@ class Agent extends BaseController
             $_SESSION['validationErrors'] = $validationErrors;
             // Recarrega o formulário de edição de clientes
             $this->edit_client(aes_encrypt($id_client));
+            // o nome é criptografado pois poderá ser lido no dev tools
             return;
         }
 
-        // Neste ponto, todas as validações passaram
-        // (a lógica de atualização no banco será implementada aqui)
-        die('ok');
+        // Verifica se existe outro cliente do mesmo agente com o mesmo nome
+        $modelAgent = new Agents();
+        $results = $modelAgent->check_if_name_exists((int) $id_client, $name);
+
+        // Se $modelAgent->check_if_name_exists retornar true, já existe um cliente com o mesmo nome.
+        if ($results['status']) {
+            $_SESSION['serverErrors'] = 'Já existe outro cliente com o mesmo nome';
+            $this->edit_client(aes_encrypt($id_client)); // Volta para o formulário exibindo o erro.
+            return;
+        }
+
+        // Converte a data de nacimento para DateTime
+        $birthdateObj = DateTime::createFromFormat('d-m-Y', $birthdate);
+
+        // Instância o obj ClientDTO
+        $clientDTO = new ClientDTO(
+            $name,
+            $gender,
+            $birthdateObj,
+            $email,
+            $phone,
+            $_SESSION['user']->id,
+            $interests
+        );
+
+        // atualiza os dados
+        $modelAgent->update_client_data((int) $id_client, $clientDTO);
+
+        // Registra log da operação
+        $loggerMsg = get_active_username() . ' - Atualizou dados do cliente: ' . $name;
+        logger($loggerMsg);
+
+        // Volta para a listagem de clientes
+        $this->my_clients();
     }
 
     public function delete_client(string $id)

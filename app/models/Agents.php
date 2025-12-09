@@ -303,20 +303,20 @@ class Agents extends BaseModel
         ];
 
         $sql = "UPDATE persons SET 
-                    name = AES_ENCRYPT(:name '" . MYSQL_AES_KEY . "'),
+                    name = AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "'),
                     gender = :gender,
                     birthdate = :birthdate,
-                    email = AES_ENCRYPT(:email '" . MYSQL_AES_KEY . "'),
-                    phone = AES_ENCRYPT(:phone '" . MYSQL_AES_KEY . "'),
+                    email = AES_ENCRYPT(:email, '" . MYSQL_AES_KEY . "'),
+                    phone = AES_ENCRYPT(:phone, '" . MYSQL_AES_KEY . "'),
                     interests = :interests,
-                    update_at = NOW()
+                    updated_at = NOW()
                     WHERE id = :id";
         
         // Abre a conexão com a base de dados
         $this->db_connect();
 
         // Executa o UPDATE
-        $this->non_query($sql, $params);   
+        $result = $this->non_query($sql, $params);   
         // Aqui, eu observei que, para melhoria futura, não temos um retorno do método non_query,
         // caso a query de um erro, ele não vai ser tratado, ocasionando efeitos indesejados. ⚠️
         // Author: Diego 09/12/25 ás 19:20  

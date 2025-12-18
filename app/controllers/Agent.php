@@ -408,9 +408,48 @@ class Agent extends BaseController
         $this->my_clients();
     }
 
+    /**
+     * Responsável por tratar a solicitação de deleção de um cliente, carregando um formulário de confirmação.
+     */
     public function delete_client(string $id)
     {
-        // echo 'Deletando o cliente ID: ' . $id;
-        echo 'Deletando o cliente ID: ' . aes_decrypt($id);
+
+        // Verifica se existe uma sessão ativa e se a sessão pertence a um agente
+        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+            header('Location: index.php'); // redireciona para a página inicial
+            return;
+        }
+
+        $id_client = aes_decrypt($id); // Desencripta o id do cliente
+
+        // Validando o id após a desencriptação
+        if (!$id_client) {
+            // ID do cliente inválido,  redireciona para o index
+            header('Location: index.php');
+            return;
+        }
+
+        // Instancia o model e faz a busca na base de dados
+        $model = new Agents();
+        $results = $model->get_client_data((int) $id_client);
+
+        // Verifica se a consulta foi bem sucedida  
+        if ($results['status'] == 'error') {
+            // Dados do cliente inválido ou não encontrados 
+            header('Location: index.php');
+            return;
+        }
+
+        // Prepara os dados que serão enviados para a view (nome, email e telefone)
+        $data = [];
+        $data['client'] = $results['data'];
+        $data['user'] = $_SESSION['user'];
+
+        // Renderiza as views
+        $this->view('layouts/html_header', $data);
+        $this->view('navbar', $data);
+        $this->view('delete_client_confirmation', $data);
+        $this->view('footer');
+        $this->view('layouts/html_footer');
     }
 }

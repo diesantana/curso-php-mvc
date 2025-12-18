@@ -16,8 +16,8 @@
                 </div>
 
                 <div class="text-center my-3">
-                    <a href="#" class="btn btn-outline-secondary px-5"><i class="fa-solid fa-xmark me-2"></i>Não</a>
-                    <a href="#" class="btn btn-secondary px-5"><i class="fa-solid fa-check me-2"></i>Sim</a>
+                    <a href="?ct=agent&mt=my_clients" class="btn btn-outline-secondary px-5"><i class="fa-solid fa-xmark me-2"></i>Não</a>
+                    <a href="?ct=agent&mt=delete_client&id=<?=aes_encrypt($client->id)?>" class="btn btn-secondary px-5"><i class="fa-solid fa-check me-2"></i>Sim</a>
                 </div>
                 
             </div>

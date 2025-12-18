@@ -411,7 +411,7 @@ class Agent extends BaseController
     /**
      * Responsável por tratar a solicitação de deleção de um cliente, carregando um formulário de confirmação.
      */
-    public function delete_client(string $id)
+    public function delete_client_submit(string $id)
     {
 
         // Verifica se existe uma sessão ativa e se a sessão pertence a um agente

@@ -322,5 +322,24 @@ class Agents extends BaseModel
         // Author: Diego 09/12/25 ás 19:20  
     }
 
+    /**
+     * Delete um cliente da base de dados.
+     * Este método executa um HARD DELETE, ou seja, uma deleção física da base de dados. 
+     * @param int $id ID do cliente a ser deletado.
+     */
+    public function delete_client(int $id) {
+        // Prepara a query
+        $params = [':id' => $id, ':id_agent' => $_SESSION['user']->id];
+
+        $sql = "DELETE FROM persons
+                    WHERE :id_agent = id_agent
+                    AND :id = id";
+
+        // Abre a conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $result = $this->non_query($sql, $params);  
+    }
 
 }

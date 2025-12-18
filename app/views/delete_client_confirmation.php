@@ -7,12 +7,12 @@
 
                 <p class="text-center mb-4">Deseja eliminar o cliente?</p>
                 
-                <h4 class="mb-4 text-center"><strong>[nome do cliente]</strong></h4>
+                <h4 class="mb-4 text-center"><strong><?= $client->name ?></strong></h4>
                 
                 <div class="text-center mb-4">
-                    <span><i class="fa-solid fa-at me-2"></i>Email: <strong>[email]</strong></span>
+                    <span><i class="fa-solid fa-at me-2"></i>Email: <strong><?= $client->email ?></strong></span>
                     <span class="mx-5"></span>
-                    <span><i class="fa-solid fa-phone me-2"></i>Telefone: <strong>[telefone]</strong></span>
+                    <span><i class="fa-solid fa-phone me-2"></i>Telefone: <strong><?= $client->phone ?></strong></span>
                 </div>
 
                 <div class="text-center my-3">

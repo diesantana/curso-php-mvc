@@ -213,7 +213,7 @@ class Agent extends BaseController
      */
     public function edit_client(string $id)
     {
-        // Verifica se existe uma sessão ativa e se essa sessão pertence a um agente
+        // Verifica se existe uma sessão ativa e se a sessão pertence a um agente
         if (!checkSession() || $_SESSION['user']->profile != 'agent') {
             header('Location: index.php'); // redireciona para a página inicial
             return;
@@ -232,7 +232,7 @@ class Agent extends BaseController
         $model = new Agents();
         $results = $model->get_client_data((int) $id_client);
 
-        // Verifica se a consulta foi bem sucessida 
+        // Verifica se a consulta foi bem sucedida  
         if ($results['status'] == 'error') {
             // Dados do cliente inválido ou não encontrados 
             header('Location: index.php');
@@ -245,22 +245,22 @@ class Agent extends BaseController
         // Formata a data de acordo com o padrão esperado pelo flatpickr
         $data['client']->birthdate = date('d-m-Y', strtotime($data['client']->birthdate));
         $data['user'] = $_SESSION['user'];
-        $data['flatpickrControl'] = true;
+        $data['flatpickrControl'] = true; // Variável de controle para ativar o flatpickr
 
         // Verifica se existem erros de validação na sessão
         if (!empty($_SESSION['validationErrors'])) {
-            $data['validationErrors'] = $_SESSION['validationErrors'];
-            unset($_SESSION['validationErrors']);
             // Armazena os erros na var $data para serem utilizados na view
+            $data['validationErrors'] = $_SESSION['validationErrors'];
             // Remove os erros da sessão para não serem utilizado em outras submissões
+            unset($_SESSION['validationErrors']);
         }
 
         // Verifica se existem erros do servidor na sessão
         if (!empty($_SESSION['serverErrors'])) {
-            $data['serverErrors'] = $_SESSION['serverErrors'];
-            unset($_SESSION['serverErrors']);
             // Armazena os erros na var $data para serem utilizados na view
+            $data['serverErrors'] = $_SESSION['serverErrors'];
             // Remove os erros da sessão para não serem utilizado em outras submissões
+            unset($_SESSION['serverErrors']);
         }
 
         // Renderiza as views
@@ -273,6 +273,8 @@ class Agent extends BaseController
 
     /**
      * Trata a submissão do formulário de edição de clientes.
+     * Este método é responsável por validar os dados da submissão do formulário,
+     * e atualizar os dados do cliente.
      */
     public function edit_client_submit()
     {
@@ -381,7 +383,7 @@ class Agent extends BaseController
             return;
         }
 
-        // Converte a data de nacimento para DateTime
+        // Converte a data de nascimento para DateTime
         $birthdateObj = DateTime::createFromFormat('d-m-Y', $birthdate);
 
         // Instância o obj ClientDTO

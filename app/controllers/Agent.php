@@ -452,4 +452,37 @@ class Agent extends BaseController
         $this->view('footer');
         $this->view('layouts/html_footer');
     }
+
+    /**
+     * Responsável por deletar um cliente da base de dados.
+     * @param string $id ID encriptado do cliente a ser deletado.
+     */
+    public function delete_client(string $id)
+    {
+        // Verifica se existe uma sessão ativa e se a sessão pertence a um agente
+        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+            header('Location: index.php'); // redireciona para a página inicial
+            return;
+        }
+
+        $id_client = aes_decrypt($id); // Desencripta o id do cliente
+
+        // Validando o id após a desencriptação
+        if (!$id_client) {
+            // ID do cliente inválido,  redireciona para o index
+            header('Location: index.php');
+            return;
+        }
+
+        // Chama o método no model que vai realizar a deleção
+        $agentModel = new Agents();
+        $agentModel->delete_client((int) $id_client);
+
+        // Registra log da operação
+        $loggerMsg = get_active_username() . ' - Deletou o cliente de ID: ' . aes_decrypt($id);
+        logger($loggerMsg);
+
+        // Volta para a listagem de clientes
+        $this->my_clients();
+    }
 }

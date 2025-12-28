@@ -2,8 +2,10 @@
     <div class="row">
 
         <div class="col-6 d-flex align-content-center p-3">
-            <img src="assets/images/logo_32.png" alt="logo bng" height="32" class="me-3">
-            <h3><?= APP_NAME ?></h3>
+            <a href="?" class="d-flex align-items-center text-decoration-none link-light">
+                <img src="assets/images/logo_32.png" alt="logo bng" height="32" class="me-3">
+                <h3 class="mb-0"><?= APP_NAME ?></h3>
+            </a>
         </div>
 
         <div class="col-6 text-end p-3">

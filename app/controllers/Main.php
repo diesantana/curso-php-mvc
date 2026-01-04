@@ -154,7 +154,7 @@ class Main extends BaseController
         // Se login for válido, vamos buscar os dados do usuário e armazená-los na sessão 
         $loggedUserData = $modelAgents->get_data_user($username);
         // registro de log
-        logger("$username - Lógin com sucesso");
+        logger("$username - Login com sucesso");
 
         /* Aqui deve existir um tratamento para verificar se existe algum usuário em "$loggedUserData" 
         antes de salvar o valor na session, porém não foi feito na aula. Refatorar depois ⚠️*/

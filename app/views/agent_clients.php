@@ -19,9 +19,9 @@
             <!-- IF (PHP)-------------------------------------------------------------------- -->
             <?php if (empty($clients)): ?>
                 <p class="my-5 text-center opacity-75">Não existem clientes registados.</p>
-            <!-- ELSE (PHP)-------------------------------------------------------------------- -->
+                <!-- ELSE (PHP)-------------------------------------------------------------------- -->
             <?php else: ?>
-                <table class="table table-striped table-bordered">
+                <table class="table table-striped table-bordered" id="clients_table">
                     <thead class="table-dark">
                         <tr>
                             <th>Nome</th>
@@ -34,28 +34,28 @@
                         </tr>
                     </thead>
                     <tbody>
-                        <?php foreach($clients as $client):?>
-                        <tr>
-                            <td><?=$client->name?></td>
-                            <td class="text-center"><?=$client->gender?></td>
-                            <td class="text-center"><?=$client->birthdate?></td>
-                            <td><?=$client->email?></td>
-                            <td class="text-center"><?=$client->phone?></td>
-                            <td><?=$client->interests?></td>
-                            <td class="text-end">
-                                <a href="?ct=agent&mt=edit_client&id=<?=aes_encrypt($client->id)?>"><i class="fa-regular fa-pen-to-square me-2"></i>Editar</a>
-                                <span class="mx-2 opacity-50">|</span>
-                                <a href="?ct=agent&mt=delete_client_submit&id=<?=aes_encrypt($client->id)?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
-                            </td>
-                        </tr>
-                        <?php endforeach;?>
+                        <?php foreach ($clients as $client): ?>
+                            <tr>
+                                <td><?= $client->name ?></td>
+                                <td class="text-center"><?= $client->gender ?></td>
+                                <td class="text-center"><?= $client->birthdate ?></td>
+                                <td><?= $client->email ?></td>
+                                <td class="text-center"><?= $client->phone ?></td>
+                                <td><?= $client->interests ?></td>
+                                <td class="text-end">
+                                    <a href="?ct=agent&mt=edit_client&id=<?= aes_encrypt($client->id) ?>"><i class="fa-regular fa-pen-to-square me-2"></i>Editar</a>
+                                    <span class="mx-2 opacity-50">|</span>
+                                    <a href="?ct=agent&mt=delete_client_submit&id=<?= aes_encrypt($client->id) ?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
+                                </td>
+                            </tr>
+                        <?php endforeach; ?>
 
                     </tbody>
                 </table>
 
                 <div class="row">
                     <div class="col">
-                        <p class="mb-5">Total: <strong><?=count($clients)?></strong></p>
+                        <p class="mb-5">Total: <strong><?= count($clients) ?></strong></p>
                     </div>
                     <div class="col text-end">
                         <a href="#" class="btn btn-secondary">
@@ -63,9 +63,43 @@
                         </a>
                     </div>
                 </div>
-            <!-- ENDIF (PHP)-------------------------------------------------------------------- -->
+                <!-- ENDIF (PHP)-------------------------------------------------------------------- -->
             <?php endif; ?>
 
         </div>
     </div>
 </div>
+<script>
+    $(document).ready(function() {
+
+        // datatable
+        $('#clients_table').DataTable({
+            pageLength: 10,
+            pagingType: "full_numbers",
+            language: {
+                decimal: "",
+                emptyTable: "Sem dados disponíveis na tabela.",
+                info: "Mostrando _START_ até _END_ de _TOTAL_ registos",
+                infoEmpty: "Mostrando 0 até 0 de 0 registos",
+                infoFiltered: "(Filtrando _MAX_ total de registos)",
+                infoPostFix: "",
+                thousands: ",",
+                lengthMenu: "Mostrando _MENU_ registos por página.",
+                loadingRecords: "Carregando...",
+                processing: "Processando...",
+                search: "Filtrar:",
+                zeroRecords: "Nenhum registro encontrado.",
+                paginate: {
+                    first: "Primeira",
+                    last: "Última",
+                    next: "Seguinte",
+                    previous: "Anterior"
+                },
+                aria: {
+                    sortAscending: ": ative para classificar a coluna em ordem crescente.",
+                    sortDescending: ": ative para classificar a coluna em ordem decrescente."
+                }
+            }
+        });
+    })
+</script>

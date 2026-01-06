@@ -22,5 +22,8 @@
         <link rel="stylesheet" href="assets/flatpickr/flatpickr.min.css">
         <script src="assets/flatpickr/flatpickr.js"></script>
     <?php endif;?>
+    <!-- DataTables.net (Biblioteca JS para tabelas dinâmicas) -->
+    <link rel="stylesheet" href="assets\datatables\datatables.min.css">
+    <script src="assets\datatables\datatables.min.js"></script>
 </head>
 <body>

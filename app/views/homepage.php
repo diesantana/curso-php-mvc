@@ -22,7 +22,7 @@
                 </a>
 
                 <!-- carregar ficheiro de clientes -->
-                <a href="#" class="unlink m-2">
+                <a href="?ct=agent&mt=show_upload_form" class="unlink m-2">
                     <div class="home-option p-5 text-center">
                         <h3 class="mb-3"><i class="fa-solid fa-upload"></i></h3>
                         <h5>Carregar ficheiro</h5>

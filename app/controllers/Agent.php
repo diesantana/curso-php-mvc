@@ -485,4 +485,27 @@ class Agent extends BaseController
         // Volta para a listagem de clientes
         $this->my_clients();
     }
+
+    /**
+     * Responsável por renderizar a view do formulário de upload
+     * de arquivos.
+     */
+    public function show_upload_form()
+    {
+        // Verificação de segurança, garantido que apenas agentes autenticados acessem o método
+        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+            header('Location: index.php');
+            // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
+        }
+
+        // Carrega os dados do usuário logado
+        $data['user'] = $_SESSION['user'];
+
+        // Renderiza as views
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('upload_file_with_clients_frm'); // formulário de uplaod
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
 }

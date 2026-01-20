@@ -501,11 +501,68 @@ class Agent extends BaseController
         // Carrega os dados do usuário logado
         $data['user'] = $_SESSION['user'];
 
+        // Verifica se existem erros de validação 
+        if (!empty($_SESSION['serverError'])) {
+            $data['serverError'] = $_SESSION['serverError']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['serverError']); // Exclui os erros após serem tratados.
+        }
+
         // Renderiza as views
         $this->view('layouts/html_header'); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
-        $this->view('upload_file_with_clients_frm'); // formulário de uplaod
+        $this->view('upload_file_with_clients_frm', $data); // formulário de uplaod
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
+
+    /**
+     * Trata a submissão do formulário de upload de arquivos. 
+     */
+    public function handle_upload()
+    {
+        // Verifica se o formulário foi submetido corretamente
+        if (!checkSession() || $_SESSION['user']->profile != 'agent' || $_SERVER['REQUEST_METHOD'] != 'POST') {
+            header('Location: index.php'); // redireciona para a página inicial (login)
+        }
+
+        // Verifica se o formulário não foi submetido sem nenhum arquivo
+        if (empty($_FILES) || empty($_FILES['clients_file']['name'])) {
+            $_SESSION['serverError'] = 'Faça o carregamento de um arquivo XSLX ou CSV';
+            $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
+            return;
+        }
+
+        // Verifica se a extenção é XLSX ou CSV
+        $validExtensions = ['csv', 'xlsx'];
+        $temp = explode('.', $_FILES['clients_file']['name']); // Divide o nome do arquivo em um array, separando pelo '.'
+        $extension = end($temp); // Pega apenas a extensão do arquivo
+        // Verifica se é uma extensão válida
+        if (!in_array($extension, $validExtensions)) {
+            $_SESSION['serverError'] = 'O arquivo deve ser do tipo XLSX ou CSV';
+            $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
+            return;
+        }
+
+        // Verifica se o arquivo tem no máximo 2MB
+        if ($_FILES['clients_file']['size'] > 2000000) {
+            $_SESSION['serverError'] = 'O arquivo deve ser menor que 2MB';
+            $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
+            return;
+        }
+
+        // Monta no nome do arquivo e o seu diretório de destino. 
+        // O nome do arquivo vai ser "dados_" concatenado com o timestamp atual, contatenado com a extensão. 
+        $file_path = __DIR__ . '/../../uploads/dados_' . time() . '.' . $extension;
+
+        // Move o arquivo para o diretório de destino (uplaods)
+        if (move_uploaded_file($_FILES['clients_file']['tmp_name'], $file_path)) {
+            // Aqui o arquivo foi movido com sucesso, o próximo passo é tratar esse arquivo
+            die("Arquivo carregado com sucesso");
+
+        } else {
+            $_SESSION['serverError'] = 'Aconteceu um erro inesperado ao carregar o arquivo.';
+            $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
+            return;
+        }
     }
 }

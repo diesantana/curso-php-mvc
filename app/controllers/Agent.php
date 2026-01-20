@@ -7,6 +7,8 @@ namespace bng\Controllers;
 use bng\DTO\ClientDTO;
 use bng\Models\Agents;
 use DateTime;
+use PhpOffice\PhpSpreadsheet\Reader\Csv;
+use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 
 /**
  * Agent Controller - Responsável pelas operações relacionadas a entidade Agent 
@@ -556,7 +558,15 @@ class Agent extends BaseController
 
         // Move o arquivo para o diretório de destino (uplaods)
         if (move_uploaded_file($_FILES['clients_file']['tmp_name'], $filePath)) {
-            // Aqui o arquivo foi movido com sucesso, o próximo passo é tratar esse arquivo
+            // verifica se o arquivo está no formato correto
+            $isValid = $this->is_valid_header($filePath);
+            if (!$isValid) {
+                $_SESSION['serverError'] = 'O formato do arquivo não é válido, por favor baixe a versão correta no link acima';
+                $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
+                return;
+            }
+
+            // Aqui o arquivo é válido
             die("Arquivo carregado com sucesso");
         } else {
             $_SESSION['serverError'] = 'Aconteceu um erro inesperado ao carregar o arquivo.';
@@ -570,15 +580,32 @@ class Agent extends BaseController
      * @param string $filePath Caminho completo contendo o nome do arquivo no servidor.
      * @return Bool true se o cabeçalho for válido e false caso seja um cabeçalho inválido. 
      */
-    private function is_valid_header(string $filePath): bool {
+    private function is_valid_header(string $filePath): bool
+    {
         $data = []; // Dados do header
         $fileInfo = pathinfo($filePath);
 
-        // Valida arquivos CSV
-        if($fileInfo['extension'] == 'csv') {
+        // Busca o header do arquivo
+        if ($fileInfo['extension'] == 'csv') {
             // Abre o arquivo CSV para leitura.
+            $reader = new Csv();
+            $reader->setInputEncoding('UTF-8');
+            $reader->setDelimiter(';');
+            $reader->setEnclosure('');
+            $sheet = $reader->load($filePath);
+            // Retorna apenas o header do arquivo
+            $data[] = $sheet->getActiveSheet()->toArray()[0];
+        } else if ($fileInfo['extension'] == 'xlsx') {
+            // Abre o arquivo XSLX para leitura
+            $reader = new Xlsx();
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($filePath);
+            // Retorna apenas o header do arquivo
+            $data[] = $spreadsheet->getActiveSheet()->toArray()[0];
         }
 
-        return false;
+        // Valida o header e retorna o resultado
+        $validHeader = 'name,gender,birthdate,email,phone,interests';
+        return implode(',', $data) == $validHeader;
     }
 }

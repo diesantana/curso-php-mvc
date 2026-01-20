@@ -552,17 +552,33 @@ class Agent extends BaseController
 
         // Monta no nome do arquivo e o seu diretório de destino. 
         // O nome do arquivo vai ser "dados_" concatenado com o timestamp atual, contatenado com a extensão. 
-        $file_path = __DIR__ . '/../../uploads/dados_' . time() . '.' . $extension;
+        $filePath = __DIR__ . '/../../uploads/dados_' . time() . '.' . $extension;
 
         // Move o arquivo para o diretório de destino (uplaods)
-        if (move_uploaded_file($_FILES['clients_file']['tmp_name'], $file_path)) {
+        if (move_uploaded_file($_FILES['clients_file']['tmp_name'], $filePath)) {
             // Aqui o arquivo foi movido com sucesso, o próximo passo é tratar esse arquivo
             die("Arquivo carregado com sucesso");
-
         } else {
             $_SESSION['serverError'] = 'Aconteceu um erro inesperado ao carregar o arquivo.';
             $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
             return;
         }
+    }
+
+    /**
+     * Valida se o cabeçalho do arquivo é valido. 
+     * @param string $filePath Caminho completo contendo o nome do arquivo no servidor.
+     * @return Bool true se o cabeçalho for válido e false caso seja um cabeçalho inválido. 
+     */
+    private function is_valid_header(string $filePath): bool {
+        $data = []; // Dados do header
+        $fileInfo = pathinfo($filePath);
+
+        // Valida arquivos CSV
+        if($fileInfo['extension'] == 'csv') {
+            // Abre o arquivo CSV para leitura.
+        }
+
+        return false;
     }
 }

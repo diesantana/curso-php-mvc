@@ -561,12 +561,13 @@ class Agent extends BaseController
             // verifica se o arquivo está no formato correto
             $isValid = $this->is_valid_header($filePath);
             if (!$isValid) {
-                $_SESSION['serverError'] = 'O formato do arquivo não é válido, por favor baixe a versão correta no link acima';
+                $_SESSION['serverError'] = 'O Modelo do arquivo não é válido, por favor baixe a versão correta no link acima';
                 $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
                 return;
             }
 
             // Aqui o arquivo é válido
+            $this->save_uploaded_clients($filePath);
             die("Arquivo carregado com sucesso");
         } else {
             $_SESSION['serverError'] = 'Aconteceu um erro inesperado ao carregar o arquivo.';
@@ -582,6 +583,40 @@ class Agent extends BaseController
      */
     private function is_valid_header(string $filePath): bool
     {
+        $currentHeader = []; // Dados do header
+        $fileInfo = pathinfo($filePath);
+
+        // Busca o header do arquivo
+        if ($fileInfo['extension'] == 'csv') {
+            // Abre o arquivo CSV para leitura.
+            $reader = new Csv();
+            $reader->setInputEncoding('UTF-8');
+            $reader->setDelimiter(';');
+            $reader->setEnclosure('');
+            $sheet = $reader->load($filePath);
+            // Retorna apenas o header do arquivo
+            $currentHeader[] = $sheet->getActiveSheet()->toArray()[0];
+        } else if ($fileInfo['extension'] == 'xlsx') {
+            // Abre o arquivo XSLX para leitura
+            $reader = new Xlsx();
+            $reader->setReadDataOnly(true);
+            $spreadsheet = $reader->load($filePath);
+            // Retorna apenas o header do arquivo
+            $currentHeader[] = $spreadsheet->getActiveSheet()->toArray()[0];
+        }
+
+        // Valida o header e retorna o resultado
+        $validHeader = 'name,gender,birthdate,email,phone,interests';
+        return implode(',', $currentHeader[0]) == $validHeader;
+    }
+
+    /**
+     * Salva os clientes na base de dados.
+     * @param string $filePath Caminho completo contendo o nome do arquivo no servidor.
+     *  
+     */
+    private function save_uploaded_clients(string $filePath)
+    {
         $data = []; // Dados do header
         $fileInfo = pathinfo($filePath);
 
@@ -594,18 +629,28 @@ class Agent extends BaseController
             $reader->setEnclosure('');
             $sheet = $reader->load($filePath);
             // Retorna apenas o header do arquivo
-            $data[] = $sheet->getActiveSheet()->toArray()[0];
+            $data[] = $sheet->getActiveSheet()->toArray();
         } else if ($fileInfo['extension'] == 'xlsx') {
             // Abre o arquivo XSLX para leitura
             $reader = new Xlsx();
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($filePath);
             // Retorna apenas o header do arquivo
-            $data[] = $spreadsheet->getActiveSheet()->toArray()[0];
+            $data[] = $spreadsheet->getActiveSheet()->toArray();
         }
 
-        // Valida o header e retorna o resultado
-        $validHeader = 'name,gender,birthdate,email,phone,interests';
-        return implode(',', $data) == $validHeader;
+        // Remove o cabeçalho do arquivo 
+        array_shift($data);
+        // Não queremos o cabeçalho, apenas os dados do cliente
+
+        // Instancia o model
+        $agentsModel = new Agents();
+
+        // Percorre o array contendo os dados dos clientes
+        foreach ($data as $currentClient) {
+            printData($currentClient);
+        }
+
+        
     }
 }

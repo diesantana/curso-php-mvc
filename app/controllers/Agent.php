@@ -184,7 +184,7 @@ class Agent extends BaseController
             return;
         }
 
-        // Converte a data de nacimento para DateTime
+        // Converte a data de nascimento para DateTime
         $birthdateObj = DateTime::createFromFormat('d-m-Y', $birthdate);
 
         // Instância o obj ClientDTO
@@ -568,7 +568,7 @@ class Agent extends BaseController
 
             // Aqui o arquivo é válido
             $this->save_uploaded_clients($filePath);
-            die("Arquivo carregado com sucesso");
+            // die("Arquivo carregado com sucesso");
         } else {
             $_SESSION['serverError'] = 'Aconteceu um erro inesperado ao carregar o arquivo.';
             $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
@@ -628,15 +628,15 @@ class Agent extends BaseController
             $reader->setDelimiter(';');
             $reader->setEnclosure('');
             $sheet = $reader->load($filePath);
-            // Retorna apenas o header do arquivo
-            $data[] = $sheet->getActiveSheet()->toArray();
+            // Retorna um array contendo os dados do arquivo
+            $data = $sheet->getActiveSheet()->toArray();
         } else if ($fileInfo['extension'] == 'xlsx') {
             // Abre o arquivo XSLX para leitura
             $reader = new Xlsx();
             $reader->setReadDataOnly(true);
             $spreadsheet = $reader->load($filePath);
-            // Retorna apenas o header do arquivo
-            $data[] = $spreadsheet->getActiveSheet()->toArray();
+            // Retorna um array contendo os dados do arquivo
+            $data = $spreadsheet->getActiveSheet()->toArray();
         }
 
         // Remove o cabeçalho do arquivo 
@@ -646,11 +646,35 @@ class Agent extends BaseController
         // Instancia o model
         $agentsModel = new Agents();
 
+        // id do agente
+        $agentId = $_SESSION['user']->id;
+
         // Percorre o array contendo os dados dos clientes
         foreach ($data as $currentClient) {
-            printData($currentClient);
-        }
+            // Verifica se o cliente já existe
+            // Nome é o primeiro item do array
+            $clientExist = $agentsModel->check_if_client_exists($currentClient[0]);
+            
+            if (!$clientExist['status']) {
+                // Converte a data de nascimento para DateTime
+                $birthdateObj = DateTime::createFromFormat('Y-m-d', $currentClient[2]);
+                // Monta o dto para salvar o cliente
+                $clientDTO = new ClientDTO(
+                    $currentClient[0],
+                    $currentClient[1],
+                    $birthdateObj,
+                    $currentClient[3],
+                    $currentClient[4],
+                    $agentId,
+                    $currentClient[4]
+                );
+                // salva o cliente
+                $agentsModel->add_new_client_to_database($clientDTO);
 
-        
+            } else {
+                // Ignora os dados se o cliente já existir.    
+                continue;
+            }
+        }
     }
 }

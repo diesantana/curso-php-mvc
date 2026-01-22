@@ -527,7 +527,7 @@ class Agent extends BaseController
             header('Location: index.php'); // redireciona para a página inicial (login)
         }
 
-        // Verifica se o formulário não foi submetido sem nenhum arquivo
+        // Verifica se o formulário foi submetido sem nenhum arquivo
         if (empty($_FILES) || empty($_FILES['clients_file']['name'])) {
             $_SESSION['serverError'] = 'Faça o carregamento de um arquivo XSLX ou CSV';
             $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
@@ -540,6 +540,10 @@ class Agent extends BaseController
         $extension = end($temp); // Pega apenas a extensão do arquivo
         // Verifica se é uma extensão válida
         if (!in_array($extension, $validExtensions)) {
+            // Registra o log da tentativa de upload
+            $loggerMsg = get_active_username() . " - Tentou enviar um arquivo no formato incorreto ({$extension}).";
+            logger($loggerMsg, 'error');
+            // Salva o erro na sessão
             $_SESSION['serverError'] = 'O arquivo deve ser do tipo XLSX ou CSV';
             $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
             return;
@@ -547,6 +551,10 @@ class Agent extends BaseController
 
         // Verifica se o arquivo tem no máximo 2MB
         if ($_FILES['clients_file']['size'] > 2000000) {
+            // Registra o log
+            $loggerMsg = get_active_username() . " - Tentou enviar um arquivo maior que o limite. Size: ({$_FILES['clients_file']['size']}).";
+            logger($loggerMsg, 'error');
+            // Salva o erro na sessão
             $_SESSION['serverError'] = 'O arquivo deve ser menor que 2MB';
             $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
             return;
@@ -561,6 +569,12 @@ class Agent extends BaseController
             // verifica se o arquivo está no formato correto
             $isValid = $this->is_valid_header($filePath);
             if (!$isValid) {
+                // Registra o log
+                $loggerMsg =
+                    get_active_username() .
+                    " - Tentou fazer um upload com o template de arquivo incorreto.";
+                logger($loggerMsg, 'error');
+                // Salva o erro na sessão
                 $_SESSION['serverError'] = 'O Modelo do arquivo não é válido, por favor baixe a versão correta no link acima';
                 $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
                 return;
@@ -570,6 +584,11 @@ class Agent extends BaseController
             $this->save_uploaded_clients($filePath);
             // die("Arquivo carregado com sucesso");
         } else {
+            // Registra o log
+            $loggerMsg =
+                get_active_username() .
+                " - Aconteceu um erro insesperado ao carregar o arquivo.";
+            logger($loggerMsg, 'error');
             $_SESSION['serverError'] = 'Aconteceu um erro inesperado ao carregar o arquivo.';
             $this->show_upload_form(); // Exibe o formulário novamente, com o erro. 
             return;
@@ -654,7 +673,7 @@ class Agent extends BaseController
             // Verifica se o cliente já existe
             // Nome é o primeiro item do array
             $clientExist = $agentsModel->check_if_client_exists($currentClient[0]);
-            
+
             if (!$clientExist['status']) {
                 // Converte a data de nascimento para DateTime
                 $birthdateObj = DateTime::createFromFormat('Y-m-d', $currentClient[2]);
@@ -670,7 +689,6 @@ class Agent extends BaseController
                 );
                 // salva o cliente
                 $agentsModel->add_new_client_to_database($clientDTO);
-
             } else {
                 // Ignora os dados se o cliente já existir.    
                 continue;

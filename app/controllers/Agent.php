@@ -509,6 +509,12 @@ class Agent extends BaseController
             unset($_SESSION['serverError']); // Exclui os erros após serem tratados.
         }
 
+        // Verifica se existe algum relatório na sessão
+        if (!empty($_SESSION['report'])) {
+            $data['report'] = $_SESSION['report']; // Armazena o relatório para ser exibido na view
+            unset($_SESSION['report']); // Exclui o relatório da sessão.
+        }
+
         // Renderiza as views
         $this->view('layouts/html_header'); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
@@ -665,11 +671,24 @@ class Agent extends BaseController
         // Instancia o model
         $agentsModel = new Agents();
 
+        // Armazena um relatório a cerca da tentativa de inserção de clientes
+        $report = [
+            'fileName' => $_FILES['clients_file']['name'],
+            'total' => 0,
+            'totalAdded' => 0,
+            'totalIgnored' => 0
+        ];
+
         // id do agente
         $agentId = $_SESSION['user']->id;
 
         // Percorre o array contendo os dados dos clientes
         foreach ($data as $currentClient) {
+
+            // Incrementa o total de clientes para o relatório
+            $report['total']++;
+
+
             // Verifica se o cliente já existe
             // Nome é o primeiro item do array
             $clientExist = $agentsModel->check_if_client_exists($currentClient[0]);
@@ -689,10 +708,22 @@ class Agent extends BaseController
                 );
                 // salva o cliente
                 $agentsModel->add_new_client_to_database($clientDTO);
+                $report['totalAdded']++; // Atualiza o relatório
             } else {
                 // Ignora os dados se o cliente já existir.    
+                $report['totalIgnored']++; // Atualiza o relatório
                 continue;
             }
         }
+
+        // registrando no log o relatório acerca do upload
+        logger(get_active_username() . ' - Carregamento do arquivo efetuado: ' . $_FILES['clients_file']['name']);
+        logger(get_active_username() . ' - Report : ' . json_encode($report));
+
+        // Salva o relatório na sessão
+        $_SESSION['report'] = $report;
+
+        // Carrega o formulário de upload
+        $this->show_upload_form();
     }
 }

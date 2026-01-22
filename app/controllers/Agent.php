@@ -688,6 +688,8 @@ class Agent extends BaseController
             // Incrementa o total de clientes para o relatório
             $report['total']++;
 
+            // Verifica se a linha está vazia
+            if(empty($currentClient[0])) continue;
 
             // Verifica se o cliente já existe
             // Nome é o primeiro item do array

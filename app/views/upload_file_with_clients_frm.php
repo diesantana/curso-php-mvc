@@ -24,9 +24,21 @@
                                 <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-upload me-2"></i>Carregar</button>
                             </div>
 
+                            <!-- Mensagens de erro -->
                             <?php if(isset($serverError)): ?>
                                 <div class="alert alert-danger p-2 text-center">
                                     <?= $serverError ?>
+                                </div>
+                            <?php endif;?>
+                            <!-- Relatório -->
+                            <?php if(isset($report)): ?>
+                                <div class="alert alert-info p-2">
+                                    <ul>
+                                        <li>Arquivo: <?=$report['fileName']?></li>
+                                        <li>Total de registros encontrados no arquivo: <?=$report['total']?></li>
+                                        <li>Total de registros adicionados: <?=$report['totalAdded']?></li>
+                                        <li>Total de registros ignorados: <?=$report['totalIgnored']?></li>
+                                    </ul>
                                 </div>
                             <?php endif;?>
                         </form>

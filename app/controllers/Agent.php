@@ -706,7 +706,7 @@ class Agent extends BaseController
                     $currentClient[3],
                     $currentClient[4],
                     $agentId,
-                    $currentClient[4]
+                    $currentClient[5]
                 );
                 // salva o cliente
                 $agentsModel->add_new_client_to_database($clientDTO);

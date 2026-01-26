@@ -9,6 +9,10 @@ use bng\Models\Agents;
 use DateTime;
 use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xls\Workbook;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 
 /**
  * Agent Controller - Responsável pelas operações relacionadas a entidade Agent 
@@ -689,7 +693,7 @@ class Agent extends BaseController
             $report['total']++;
 
             // Verifica se a linha está vazia
-            if(empty($currentClient[0])) continue;
+            if (empty($currentClient[0])) continue;
 
             // Verifica se o cliente já existe
             // Nome é o primeiro item do array
@@ -727,5 +731,52 @@ class Agent extends BaseController
 
         // Carrega o formulário de upload
         $this->show_upload_form();
+    }
+
+    /**
+     * Exporta a lista de clientes para um arquivo XLSX.
+     */
+    public function export_clients_xlsx()
+    {
+        // Verificação de segurança, garantido que apenas agentes autenticados acessem o método
+        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+            header('Location: index.php');
+            // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
+        }
+
+        // Busca os clientes do agente atual
+        $agentModel = new Agents();
+        $agentId = $_SESSION['user']->id;
+        $results = $agentModel->get_agent_clients($agentId);
+
+        // Cria o header do arquivo
+        $data[] = ['name', 'gender', 'birthdate', 'email', 'phone', 'interests', 'created_at', 'updated_at'];
+
+        // Salva os clientes no array $data
+        foreach($results['data'] as $currentClient) {
+            // remove o id
+            $currentClientArray = (array) $currentClient;
+            unset($currentClientArray['id']);
+            // Adiciona o cliente ao array
+            $data[] = $currentClientArray;
+            // estamos fazendo um casting para array pois o método 
+            // "$agentModel->get_agent_clients" retorna um objeto stdClass
+        }
+
+        // Salva os clientes em um arquivo XLSX
+        $filename = 'output_' . time() . '.xlsx'; // nomeia o arquivo
+        $spreadsheet = new Spreadsheet(); 
+        $spreadsheet->removeSheetByIndex(0);
+        $worksheet = new Worksheet($spreadsheet, 'dados');
+        $spreadsheet->addSheet($worksheet);
+        $worksheet->fromArray($data);
+
+        $writer = new WriterXlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Dispostion: attachment; filename="'. urlencode($filename) . '"');
+        $writer->save('php://output');
+
+        // Logger
+        logger(get_active_username() . '- Fez download da lista de clientes');
     }
 }

@@ -8,7 +8,7 @@
 
                         <h4 class="mb-4"><strong>Carregar ficheiro de clientes</strong></h4>
                         
-                        <p class="text-center">Carregar ficheiro em formato CSV ou XLSX. Se não tem o template do ficheiro, faça download <a href="#">AQUI</a></p>
+                        <p class="text-center">Carregar ficheiro em formato CSV ou XLSX. Se não tem o template do ficheiro, faça download <a href="assets/file_template/template.xlsx">AQUI</a></p>
 
                         <hr>
 

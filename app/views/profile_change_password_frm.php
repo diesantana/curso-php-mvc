@@ -36,10 +36,26 @@
                     </div>
 
                 </form>
-
-                <div class="alert alert-danger p-2 text-center">
-                    [mensagem de erro]
-                </div>
+                <!-- Erros do servidor -->
+                <?php if (isset($serverErrors)): ?>
+                    <div class="alert alert-danger p-2 text-center">
+                        <ul>
+                            <?php foreach ($serverErrors as $error): ?>
+                                <li><?= $error ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+                <!-- Erros de validação -->
+                <?php if (isset($validationErrors)): ?>
+                    <div class="alert alert-danger p-2 text-center">
+                        <ul>
+                            <?php foreach ($validationErrors as $error): ?>
+                                <li><?= $error ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
 
             </div>
         </div>

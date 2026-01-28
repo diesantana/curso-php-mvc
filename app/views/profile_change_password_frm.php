@@ -31,7 +31,7 @@
                     </div>
 
                     <div class="mb-3 text-center">
-                        <a href="#" class="btn btn-secondary px-3"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
+                        <a href="?ct=main&mt=index" class="btn btn-secondary px-3"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
                         <button type="submit" class="btn btn-secondary px-3"><i class="fa-solid fa-check me-2"></i>Alterar</button>
                     </div>
 

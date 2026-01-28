@@ -11,7 +11,6 @@ use PhpOffice\PhpSpreadsheet\Reader\Csv;
 use PhpOffice\PhpSpreadsheet\Reader\Xlsx;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
-use PhpOffice\PhpSpreadsheet\Writer\Xls\Workbook;
 use PhpOffice\PhpSpreadsheet\Writer\Xlsx as WriterXlsx;
 
 /**
@@ -753,7 +752,7 @@ class Agent extends BaseController
         $data[] = ['name', 'gender', 'birthdate', 'email', 'phone', 'interests', 'created_at', 'updated_at'];
 
         // Salva os clientes no array $data
-        foreach($results['data'] as $currentClient) {
+        foreach ($results['data'] as $currentClient) {
             // remove o id
             $currentClientArray = (array) $currentClient;
             unset($currentClientArray['id']);
@@ -765,7 +764,7 @@ class Agent extends BaseController
 
         // Salva os clientes em um arquivo XLSX
         $filename = 'output_' . time() . '.xlsx'; // nomeia o arquivo
-        $spreadsheet = new Spreadsheet(); 
+        $spreadsheet = new Spreadsheet();
         $spreadsheet->removeSheetByIndex(0);
         $worksheet = new Worksheet($spreadsheet, 'dados');
         $spreadsheet->addSheet($worksheet);
@@ -773,10 +772,44 @@ class Agent extends BaseController
 
         $writer = new WriterXlsx($spreadsheet);
         header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
-        header('Content-Dispostion: attachment; filename="'. urlencode($filename) . '"');
+        header('Content-Dispostion: attachment; filename="' . urlencode($filename) . '"');
         $writer->save('php://output');
 
         // Logger
         logger(get_active_username() . '- Fez download da lista de clientes');
+    }
+
+    /**
+     * Renderizar a view de atualização de senha.
+     */
+    public function show_change_password_form()
+    {
+        // Verificação de segurança, garantido que apenas agentes autenticados acessem o método
+        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+            header('Location: index.php');
+            // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
+        }
+
+        // Carrega os dados do usuário logado
+        $data['user'] = $_SESSION['user'];
+
+        // Verifica se existem erros de validação 
+        if (!empty($_SESSION['valdiationError'])) {
+            $data['valdiationError'] = $_SESSION['valdiationError']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['valdiationError']); // Exclui os erros após serem tratados.
+        }
+
+        // Verifica se existem erros do servidor 
+        if (!empty($_SESSION['serverError'])) {
+            $data['serverError'] = $_SESSION['serverError']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['serverError']); // Exclui os erros após serem tratados.
+        }
+
+        // Renderiza as views
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('profile_change_password_frm', $data); // formulário de UPDATE
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 }

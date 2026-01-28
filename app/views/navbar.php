@@ -16,7 +16,7 @@
                 <i class="fa-regular fa-user me-2"></i><?= $user->name?> 
                 </button>
                 <ul class="dropdown-menu">
-                    <li><a class="dropdown-item" href="?ct=agent&mt=show_change_password_form"><i class="fa-solid fa-key me-2"></i>Alterar password</i></a></li>
+                    <li><a class="dropdown-item" href="?ct=main&mt=show_change_password_form"><i class="fa-solid fa-key me-2"></i>Alterar password</i></a></li>
                     <li><hr class="dropdown-divider"></li>
                     <li><a class="dropdown-item" href="?ct=main&mt=logout"><i class="fa-solid fa-right-from-bracket me-2"></i>Sair</a></li>
                 </ul>

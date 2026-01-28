@@ -779,37 +779,4 @@ class Agent extends BaseController
         logger(get_active_username() . '- Fez download da lista de clientes');
     }
 
-    /**
-     * Renderizar a view de atualização de senha.
-     */
-    public function show_change_password_form()
-    {
-        // Verificação de segurança, garantido que apenas agentes autenticados acessem o método
-        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
-            header('Location: index.php');
-            // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
-        }
-
-        // Carrega os dados do usuário logado
-        $data['user'] = $_SESSION['user'];
-
-        // Verifica se existem erros de validação 
-        if (!empty($_SESSION['valdiationError'])) {
-            $data['valdiationError'] = $_SESSION['valdiationError']; // Armazena os erros para serem exibidos na view
-            unset($_SESSION['valdiationError']); // Exclui os erros após serem tratados.
-        }
-
-        // Verifica se existem erros do servidor 
-        if (!empty($_SESSION['serverError'])) {
-            $data['serverError'] = $_SESSION['serverError']; // Armazena os erros para serem exibidos na view
-            unset($_SESSION['serverError']); // Exclui os erros após serem tratados.
-        }
-
-        // Renderiza as views
-        $this->view('layouts/html_header'); // Estrutura inicial do HTML
-        $this->view('navbar', $data); // navbar
-        $this->view('profile_change_password_frm', $data); // formulário de UPDATE
-        $this->view('footer'); // footer
-        $this->view('layouts/html_footer'); // Estrutura final do HTML
-    }
 }

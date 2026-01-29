@@ -377,4 +377,33 @@ class Agents extends BaseModel
             return ['status' => false];
         }
     }
+
+    /**
+     * Atualiza a senha na base de dados.
+     * @param int $userId ID do usuário atual.
+     * @param string $newPassword Nova senha.
+     * @return array Se ['status'] = TRUE operação realizada com sucesso, Se ['status'] = FALSE ocorreu um erro. 
+     * 
+     */
+    public function update_password(int $userId, string $newPassword): array
+    {
+        // Transforma a senha em hash
+        $newPasswordHash = password_hash($newPassword, PASSWORD_DEFAULT);
+        // Prepara a query
+        $params = [':id' => $userId, ':newPassword' => $newPasswordHash];
+        // query
+        $sql = 'UPDATE agents SET passwrd = :newPassword, updated_at = NOW() WHERE id = :id';
+
+        // Conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $resultQuery = $this->non_query($sql, $params);
+
+        if ($resultQuery->affected_rows >= 1) {
+            return ['status' => true];
+        } else {
+            return ['status' => true];
+        }
+    }
 }

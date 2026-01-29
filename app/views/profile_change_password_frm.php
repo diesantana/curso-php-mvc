@@ -4,6 +4,12 @@
             <div class="card p-4 mb-5">
 
 
+                <!-- Mensagem de sucesso -->
+                <?php if (isset($successMsg)): ?>
+                    <div class="alert alert-success p-2 text-center">
+                        <?= $successMsg ?>
+                    </div>
+                <?php endif; ?>
                 <form action="?ct=main&mt=handle_change_password" method="post" novalidate>
                     <div class="row justify-content-center">
                         <div class="col-8">

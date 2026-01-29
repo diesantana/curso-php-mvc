@@ -200,7 +200,7 @@ class Main extends BaseController
     public function show_change_password_form()
     {
         // Verificação de segurança, garantido que apenas agentes autenticados acessem o método
-        if (!checkSession() || $_SESSION['user']->profile != 'agent') {
+        if (!checkSession()) {
             header('Location: index.php');
             // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
         }
@@ -285,5 +285,4 @@ class Main extends BaseController
         }
     }
 
-    // Refatorar o método show_change_password_form, removendo a verificação de "agent"
 }

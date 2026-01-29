@@ -10,6 +10,27 @@
                         <?= $successMsg ?>
                     </div>
                 <?php endif; ?>
+                <!-- Erros do servidor -->
+                <?php if (isset($serverErrors)): ?>
+                    <div class="alert alert-danger p-2 text-center">
+                        <ul>
+                            <?php foreach ($serverErrors as $error): ?>
+                                <li><?= $error ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+                <!-- Erros de validação -->
+                <?php if (isset($validationErrors)): ?>
+                    <div class="alert alert-danger p-2 text-center">
+                        <ul>
+                            <?php foreach ($validationErrors as $error): ?>
+                                <li><?= $error ?></li>
+                            <?php endforeach; ?>
+                        </ul>
+                    </div>
+                <?php endif; ?>
+                <!-- Formulário -->
                 <form action="?ct=main&mt=handle_change_password" method="post" novalidate>
                     <div class="row justify-content-center">
                         <div class="col-8">
@@ -42,27 +63,6 @@
                     </div>
 
                 </form>
-                <!-- Erros do servidor -->
-                <?php if (isset($serverErrors)): ?>
-                    <div class="alert alert-danger p-2 text-center">
-                        <ul>
-                            <?php foreach ($serverErrors as $error): ?>
-                                <li><?= $error ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-                <!-- Erros de validação -->
-                <?php if (isset($validationErrors)): ?>
-                    <div class="alert alert-danger p-2 text-center">
-                        <ul>
-                            <?php foreach ($validationErrors as $error): ?>
-                                <li><?= $error ?></li>
-                            <?php endforeach; ?>
-                        </ul>
-                    </div>
-                <?php endif; ?>
-
             </div>
         </div>
     </div>

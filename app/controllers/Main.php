@@ -220,6 +220,12 @@ class Main extends BaseController
             unset($_SESSION['serverErrors']); // Exclui os erros após serem tratados.
         }
 
+        // Verifica se existem mensagens de sucesso no servidor 
+        if (!empty($_SESSION['successMsg'])) {
+            $data['successMsg'] = $_SESSION['successMsg']; // Armazena a msg para ser exibida na view
+            unset($_SESSION['successMsg']); // Exclui a msg da sessão
+        }
+
         // Renderiza as views
         $this->view('layouts/html_header'); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
@@ -292,9 +298,16 @@ class Main extends BaseController
             $serverErrors[] = 'Ocorreu um erro ao atualizar a senha.';
             $_SESSION['serverErrors'] = $serverErrors;
             $this->show_change_password_form();
-            return; 
+            return;
         }
 
-        // Se chegou aqui a senha foi atualizada com sucesso. O próximo passo é chamar a view de sucesso.
+        // Registro de log da operação
+        $username = $_SESSION['user']->name;
+        logger($username . '- Alterou a password');
+
+        // Mensagem de sucesso para exibir na view
+        $_SESSION['successMsg'] = 'Password Atualizada com sucesso';
+        $this->show_change_password_form();
+        return;
     }
 }

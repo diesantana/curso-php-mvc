@@ -97,7 +97,8 @@ class Agents extends BaseModel
      * @param string $id id do usuário a ser atualizado.
      * @return midex Um Objeto do tipo stdClass contendo status e dados do usuário.
      */
-    public function set_user_last_login(string $id): mixed {
+    public function set_user_last_login(string $id): mixed
+    {
 
         $this->db_connect(); // Conexão com a base de dados
         $params = [':id' => $id]; // Parâmetros usados na consulta
@@ -115,7 +116,8 @@ class Agents extends BaseModel
      * - 'status' da operação
      * - 'data' contendo os dados da consulta. 
      */
-    public function get_agent_clients(int $id) :array {
+    public function get_agent_clients(int $id): array
+    {
         // Parâmetros da query (Segurança / PDO)
         $params = ['id_agent' => $id];
 
@@ -127,7 +129,7 @@ class Agents extends BaseModel
 
         // Executa a query
         $resultsQuery = $this->query($sql, $params);
-        
+
         // Atualmente o retorno sempre tem o status success, independe da query encontrar registros ou não.	
         return [
             'status' => 'success',
@@ -144,7 +146,8 @@ class Agents extends BaseModel
      * - "['status'] = true" Se o cliente já existe
      * - "['status'] = false" Se o cliente não existe
      */
-    public function check_if_client_exists($name) :array {
+    public function check_if_client_exists($name): array
+    {
         // Parâmetros para a query
         $params = [
             ':id_agent' => $_SESSION['user']->id,
@@ -161,11 +164,11 @@ class Agents extends BaseModel
         $result = $this->query($sql, $params);
 
         // Verifica se encontrou algum registro
-        if($result->affected_rows == 0) {
+        if ($result->affected_rows == 0) {
             // Se não encontrou registros com o mesmo nome, retorna false
-            return ['status' => false]; 
+            return ['status' => false];
         }
-        
+
         // Se encontrou algum registro com o mesmo nome, retorna true
         return ['status' => true];
     }
@@ -175,7 +178,8 @@ class Agents extends BaseModel
      * @param array $post_data Os dados submetidos pelo usuário para cadastro, via método $_POST
      * @return void Não retorna nada, apenas insere o cliente na base de dados.
      */
-    public function add_new_client_to_database(ClientDTO $client) {
+    public function add_new_client_to_database(ClientDTO $client)
+    {
 
         // // Converte a data recebida do formulário para objeto DateTime
         // $birthdate = DateTime::createFromFormat('d-m-Y', $post_data['text_birthdate']);
@@ -192,8 +196,8 @@ class Agents extends BaseModel
         ];
 
         // Query SQL 
-        $sql = 
-        "INSERT INTO persons VALUES(
+        $sql =
+            "INSERT INTO persons VALUES(
             0,
             AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "'),
             :gender,
@@ -206,7 +210,7 @@ class Agents extends BaseModel
             NOW(),
             NULL
         )";
-        
+
         // Conexão com a base de dados
         $this->db_connect();
 
@@ -221,7 +225,8 @@ class Agents extends BaseModel
      * - 1. Se Sucesso: Array com 'status' = sucesso e 'data' contendo os dados do cliente
      * - 2. Se Erro: Array com 'status' = error
      */
-    public function get_client_data(int $id) : array {
+    public function get_client_data(int $id): array
+    {
         // Prepara a query
         $params = [':id' => $id];
 
@@ -236,7 +241,7 @@ class Agents extends BaseModel
         $results = $this->query($sql, $params);
 
         // Verifica se houve um erro na query
-        if($results->affected_rows == 0) {
+        if ($results->affected_rows == 0) {
             return ['status' => 'error'];
         }
 
@@ -251,7 +256,8 @@ class Agents extends BaseModel
      * @return array Array contendo status igual a true se o nome já existe, ou, 
      * false se o nome ainda não existe na base de dados. 
      */
-    public function check_if_name_exists(int $id, string $name) : array{
+    public function check_if_name_exists(int $id, string $name): array
+    {
 
         // Parâmetros para a query
         $params = [
@@ -274,12 +280,11 @@ class Agents extends BaseModel
         $results = $this->query($sql, $params);
 
         // Se a query devolveu linhas, já existem um cliente com o mesmo nome
-        if($results->affected_rows != 0) {
+        if ($results->affected_rows != 0) {
             return ['status' => true]; // existe conflito de nome
         } else {
             return ['status' => false]; // nome está livre
         }
-
     }
 
     /**
@@ -290,7 +295,8 @@ class Agents extends BaseModel
      * @param ClientDTO $client Dados atualizados do cliente.
      * @return void Esse método não retornada nada, apenas atualiza os dados na base de dados.
      */
-    public function update_client_data(int $id, ClientDTO $client) {
+    public function update_client_data(int $id, ClientDTO $client)
+    {
         // Prepara a query
         $params = [
             ':id' => $id,
@@ -311,12 +317,12 @@ class Agents extends BaseModel
                     interests = :interests,
                     updated_at = NOW()
                     WHERE id = :id";
-        
+
         // Abre a conexão com a base de dados
         $this->db_connect();
 
         // Executa o UPDATE
-        $result = $this->non_query($sql, $params);   
+        $result = $this->non_query($sql, $params);
         // Aqui, eu observei que, para melhoria futura, não temos um retorno do método non_query,
         // caso a query de um erro, ele não vai ser tratado, ocasionando efeitos indesejados. ⚠️
         // Author: Diego 09/12/25 ás 19:20  
@@ -327,7 +333,8 @@ class Agents extends BaseModel
      * Este método executa um HARD DELETE, ou seja, uma deleção física da base de dados. 
      * @param int $id ID do cliente a ser deletado.
      */
-    public function delete_client(int $id) {
+    public function delete_client(int $id)
+    {
         // Prepara a query
         $params = [':id' => $id, ':id_agent' => $_SESSION['user']->id];
 
@@ -339,7 +346,35 @@ class Agents extends BaseModel
         $this->db_connect();
 
         // Executa a query
-        $result = $this->non_query($sql, $params);  
+        $result = $this->non_query($sql, $params);
     }
 
+    /**
+     * Compara uma string com a senha atual, armazenada em hash. 
+     * @param int $userId ID do usuário atual.
+     * @param string $password Senha a ser comparada com a senha atual.
+     * @return bool Se TRUE as senhas são iguais, Se FALSE as senhas são diferentes. 
+     * 
+     */
+    public function verify_password(int $userId, string $password): array
+    {
+        // parâmetros da query
+        $params = ['userId' => $userId];
+
+        // Inicia a conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $resultQuery = $this->query('SELECT passwrd FROM agents WHERE id = :userId', $params);
+
+        // Senha atual
+        $currentPasswordHash = $resultQuery->results[0]->passwrd;
+
+        // Verifica se as senhas são iguais
+        if (password_verify($password, $currentPasswordHash)) {
+            return ['status' => true];
+        } else {
+            return ['status' => false];
+        }
+    }
 }

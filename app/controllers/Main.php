@@ -209,15 +209,15 @@ class Main extends BaseController
         $data['user'] = $_SESSION['user'];
 
         // Verifica se existem erros de validação 
-        if (!empty($_SESSION['valdiationError'])) {
-            $data['valdiationError'] = $_SESSION['valdiationError']; // Armazena os erros para serem exibidos na view
-            unset($_SESSION['valdiationError']); // Exclui os erros após serem tratados.
+        if (!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['validationErrors']); // Exclui os erros após serem tratados.
         }
 
         // Verifica se existem erros do servidor 
-        if (!empty($_SESSION['serverError'])) {
-            $data['serverError'] = $_SESSION['serverError']; // Armazena os erros para serem exibidos na view
-            unset($_SESSION['serverError']); // Exclui os erros após serem tratados.
+        if (!empty($_SESSION['serverErrors'])) {
+            $data['serverErrors'] = $_SESSION['serverErrors']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['serverErrors']); // Exclui os erros após serem tratados.
         }
 
         // Renderiza as views
@@ -227,4 +227,63 @@ class Main extends BaseController
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
+
+    /**
+     * Trata a submissão do formulário de update de senhas.
+     */
+    public function handle_change_password()
+    {
+        // Verifica se a requisição é válida
+        if (!checkSession() || $_SERVER['REQUEST_METHOD'] != 'POST') {
+            header('Location: index.php');
+            // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
+        }
+
+        $validationErrors = []; // Armazena os erros de validação
+
+        // Dados recebidos
+        $currentPassword = $_POST['text_current_password'] ?? '';
+        $newPassword = $_POST['text_new_password'] ?? '';
+        $repeatNewPassword = $_POST['text_repeat_new_password'] ?? '';
+
+        // Valida o campo "Password atual"
+        if (empty($currentPassword)) {
+            $validationErrors[] = 'O campo "Password atual" é de preenchimento obrigatório';
+        }
+
+        // Valida o campo "Nova password"
+        if (empty($newPassword)) {
+            $validationErrors[] = 'O campo "Nova password" é de preenchimento obrigatório';
+        } else if (strlen($newPassword) < 6 || strlen($newPassword) > 12) {
+            $validationErrors[] = 'A nova senha deve ter entre 6 e 12 caracteres';
+        } else if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/', $newPassword)) {
+            $validationErrors[] = 'A password deve conter pelo menos uma letra maiúscula, uma minúscula e um dígito.';
+        }
+
+        // Valida o campo Repetir nova password
+        if (empty($repeatNewPassword)) {
+            $validationErrors[] = 'O campo "Repetir a nova password" é de preenchimento obrigatório';
+        } else if ($newPassword != $repeatNewPassword) {
+            $validationErrors[] = 'O campo "Nova password" e "Repetir a nova password" devem ser iguais';
+        }
+
+        // Tratando os erros de validação
+        if (!empty($validationErrors)) {
+            $_SESSION['validationErrors'] = $validationErrors;
+            $this->show_change_password_form();
+            return;
+        }
+
+        // Válida se a senha atual está correta
+        $modelAgents = new Agents();
+        $isPasswordCorrect = $modelAgents->verify_password($_SESSION['user']->id, $currentPassword);
+
+        if ($isPasswordCorrect['status']) {
+            echo 'Senha correta';
+        } else {
+            echo 'A senha atual está incorreta';
+        }
+    }
+
+    // Refatorar o método show_change_password_form, removendo a verificação de "agent"
 }

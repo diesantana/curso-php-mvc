@@ -353,7 +353,7 @@ class Agents extends BaseModel
      * Compara uma string com a senha atual, armazenada em hash. 
      * @param int $userId ID do usuário atual.
      * @param string $password Senha a ser comparada com a senha atual.
-     * @return bool Se TRUE as senhas são iguais, Se FALSE as senhas são diferentes. 
+     * @return array Se ['status'] = TRUE as senhas são iguais, Se ['status'] = FALSE as senhas são diferentes. 
      * 
      */
     public function verify_password(int $userId, string $password): array

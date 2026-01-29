@@ -278,11 +278,23 @@ class Main extends BaseController
         $modelAgents = new Agents();
         $isPasswordCorrect = $modelAgents->verify_password($_SESSION['user']->id, $currentPassword);
 
-        if ($isPasswordCorrect['status']) {
-            echo 'Senha correta';
-        } else {
-            echo 'A senha atual está incorreta';
+        if (!$isPasswordCorrect['status']) {
+            $serverErrors[] = 'A senha atual é inválida';
+            $_SESSION['serverErrors'] = $serverErrors;
+            $this->show_change_password_form();
+            return;
         }
-    }
 
+        // Faz o update
+        $resultUpdate = $modelAgents->update_password($_SESSION['user']->id, $newPassword);
+
+        if (!$resultUpdate['status']) {
+            $serverErrors[] = 'Ocorreu um erro ao atualizar a senha.';
+            $_SESSION['serverErrors'] = $serverErrors;
+            $this->show_change_password_form();
+            return; 
+        }
+
+        // Se chegou aqui a senha foi atualizada com sucesso. O próximo passo é chamar a view de sucesso.
+    }
 }

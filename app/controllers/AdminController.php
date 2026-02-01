@@ -9,6 +9,9 @@ use bng\Models\AdminModel;
 
 class AdminController extends BaseController
 {
+    /**
+     * Exibe a lista global de clientes com os seus respectivos agentes.
+     */
     public function show_all_clients()
     {
         // Verifica se existe um admin logado
@@ -18,6 +21,7 @@ class AdminController extends BaseController
 
         // Instância o model
         $adminModel = new AdminModel();
+        $adminModel->get_all_clients();
         // Chama o método para buscar os clientes. 
     }
 }

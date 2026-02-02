@@ -6,6 +6,9 @@ namespace bng\Controllers;
 
 use bng\Controllers\BaseController;
 use bng\Models\AdminModel;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
 
 class AdminController extends BaseController
 {
@@ -33,5 +36,50 @@ class AdminController extends BaseController
         $this->view('global_clients', $data); // exibição dos clientes
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
+
+    /**
+     * Exporta a lista global de clientes para um arquivo XLSX.
+     */
+    public function export_global_clients_xlsx()
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+        }
+
+        // Busca a lista global de clientes
+        $adminModel = new AdminModel();
+        $clients = $adminModel->get_all_clients(); // Busca os clientes
+
+        // Cria o header do arquivo
+        $data[] = ['name', 'gender', 'birthdate', 'email', 'phone', 'interests', 'created_at', 'agent'];
+
+        // Salva os clientes no array $data
+        foreach ($clients as $currentClient) {
+            // remove o id
+            $currentClientArray = (array) $currentClient;
+            unset($currentClientArray['id']);
+            // Adiciona o cliente ao array
+            $data[] = $currentClientArray;
+            // estamos fazendo um casting para array pois o método 
+            // "get_all_clients()" retorna um objeto stdClass
+        }
+
+        // Salva os clientes em um arquivo XLSX
+        $filename = 'output_' . time() . '.xlsx'; // nomeia o arquivo
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->removeSheetByIndex(0);
+        $worksheet = new Worksheet($spreadsheet, 'dados');
+        $spreadsheet->addSheet($worksheet);
+        $worksheet->fromArray($data);
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Dispostion: attachment; filename="' . urlencode($filename) . '"');
+        $writer->save('php://output');
+
+        // Logger
+        logger(get_active_username() . '- Fez download da lista global de clientes');
     }
 }

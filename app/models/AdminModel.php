@@ -18,6 +18,7 @@ class AdminModel extends BaseModel
             "persons.gender, " .
             "persons.birthdate, " .
             "AES_DECRYPT(persons.email, '" . MYSQL_AES_KEY . "') as email, " . // criptografia
+            "AES_DECRYPT(persons.phone, '" . MYSQL_AES_KEY . "') as phone, " . // criptografia
             "persons.interests, " .
             "persons.created_at, " .
             "AES_DECRYPT(agents.name, '" . MYSQL_AES_KEY . "') as agent " . // criptografia

@@ -16,12 +16,22 @@ class AdminController extends BaseController
     {
         // Verifica se existe um admin logado
         if (!checkSession() || $_SESSION['user']->profile != 'admin') {
-            header('Location: index.php'); 
+            header('Location: index.php');
         }
 
         // Instância o model
         $adminModel = new AdminModel();
-        $adminModel->get_all_clients();
-        // Chama o método para buscar os clientes. 
+        $clients = $adminModel->get_all_clients(); // Busca os clientes
+
+        // prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+        $data['clients'] = $clients;
+
+        // Renderiza a view "global_clients", responsável pela exibição dos clientes
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('global_clients', $data); // exibição dos clientes
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 }

@@ -82,4 +82,33 @@ class AdminController extends BaseController
         // Logger
         logger(get_active_username() . '- Fez download da lista global de clientes');
     }
+
+    /** 
+     * Renderiza a view Stats, que exibe dados dos clientes e agentes.
+     */
+    public function show_statistics()
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+        }
+
+        $adminModel = new AdminModel();
+
+        // Busca o total de clientes por agente
+        $clientsPerAgents = $adminModel->get_client_count_by_agent();
+
+        // Prepara os dados para a view
+
+        $data['user'] = $_SESSION['user'];
+        $data['clientsPerAgents'] = $clientsPerAgents;
+
+        // Renderiza a view "stats", responsável pela exibição dos clientes
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('stats', $data); // view de estatísticas
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
+
+    }
 }

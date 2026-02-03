@@ -8,7 +8,7 @@ class AdminModel extends BaseModel
      * Busca Todos os clientes na base de dados, com os seus respectivos agentes. 
      * @return Array Array contendo os dados dos clientes em formato stdClass Object
      */
-    public function get_all_clients() :array
+    public function get_all_clients(): array
     {
         $this->db_connect(); // Conexão com a base de dados
         $sql =
@@ -30,5 +30,29 @@ class AdminModel extends BaseModel
         $results = $this->query($sql);
 
         return $results->results;
+    }
+
+    /**
+     * Busca o total de clientes por agente
+     * @return Array Array contendo os dados dos agentes e a quantidade 
+     * de clientes em formato stdClass Object
+     */
+    public function get_client_count_by_agent(): array {
+
+        $this->db_connect(); // conexão com a base de dados
+
+        // SQL
+        $sql = "SELECT 
+                AES_DECRYPT(agents.name, '" . MYSQL_AES_KEY . "') as 'name',
+                COUNT(*) as 'total'
+                FROM agents
+                JOIN persons ON agents.id = persons.id_agent
+                WHERE persons.deleted_at IS NULL
+                GROUP BY agents.name
+                ORDER BY total DESC;";
+
+        // executa a query
+        $result = $this->query($sql);
+        return $result->results;
     }
 }

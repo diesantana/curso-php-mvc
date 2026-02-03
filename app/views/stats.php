@@ -7,7 +7,7 @@
                     <h4><strong>Dados estatísticos</strong></h4>
                 </div>
                 <div class="col text-end">
-                    <a href="#" class="btn btn-secondary px-4"><i class="fa-solid fa-chevron-left me-2"></i>Voltar</a>
+                    <a href="?ct=main&mt=index" class="btn btn-secondary px-4"><i class="fa-solid fa-chevron-left me-2"></i>Voltar</a>
                 </div>
             </div>
 
@@ -41,7 +41,7 @@
 
             <div class="row mb-3">
                 <div class="col text-center">
-                    <a href="#" class="btn btn-secondary px-4"><i class="fa-solid fa-chevron-left me-2"></i>Voltar</a>
+                    <a href="?ct=main&mt=index" class="btn btn-secondary px-4"><i class="fa-solid fa-chevron-left me-2"></i>Voltar</a>
                 </div>
             </div>
                 

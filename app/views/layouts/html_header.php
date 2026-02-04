@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="pt-br">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
@@ -17,13 +18,19 @@
     <!-- custom css -->
     <link rel="stylesheet" href="assets/app.css">
     <!-- flatpickr biblioteca para campos input de data-->
-    <?php if(isset($flatpickrControl)):?>
+    <?php if (isset($flatpickrControl)): ?>
         <!-- Carrega os arquivos do flatpicker apenas se a var de controle existir -->
         <link rel="stylesheet" href="assets/flatpickr/flatpickr.min.css">
         <script src="assets/flatpickr/flatpickr.js"></script>
-    <?php endif;?>
+    <?php endif; ?>
     <!-- DataTables.net (Biblioteca JS para tabelas dinâmicas) -->
     <link rel="stylesheet" href="assets\datatables\datatables.min.css">
     <script src="assets\datatables\datatables.min.js"></script>
+    <!-- chart.js (biblioteca para gráficos) -->
+    <?php if (isset($chartjs)): ?>
+        <!-- Carrega o script chart.js apenas se a var de controle existir -->
+        <script src="assets/chartjs/chart.min.js"></script>
+    <?php endif; ?>
 </head>
+
 <body>

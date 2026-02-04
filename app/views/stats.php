@@ -45,7 +45,7 @@
                 <div class="col-sm-6 col-12 p-1">
                     <div class="card p-3">
                         <h4><i class="fa-solid fa-users me-2"></i>Gráfico</h4>
-                        [gráfico]
+                        <canvas id="myChart" height="300px"></canvas>
                     </div>
                 </div>
             </div>
@@ -72,3 +72,28 @@
 </div>
 </div>
 </div>
+<script>
+
+    <?php if(count($clientsPerAgents) != 0):?>
+        const ctx = document.getElementById('myChart');
+        new Chart('myChart', {
+            type: 'bar',
+            data: {
+                labels: <?= $chartLabels?>,
+                datasets: [{
+                    label: 'Total de clientes por agente',
+                    data: <?= $chartTotals ?>,
+                    backgroudColor: 'rbg(50,100,200)',
+                }]
+            },
+            options: {
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        });
+    <?php endif;?>
+
+</script>

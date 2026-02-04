@@ -99,16 +99,27 @@ class AdminController extends BaseController
         $clientsPerAgents = $adminModel->get_client_count_by_agent();
 
         // Prepara os dados para a view
-
         $data['user'] = $_SESSION['user'];
         $data['clientsPerAgents'] = $clientsPerAgents;
 
+        // Dados para o gráfico
+        $data['chartjs'] = true; // Ativa o chart.js
+        if(count($clientsPerAgents) != 0) {
+            $labels_temp = [];
+            $totals_temp = [];
+            foreach($clientsPerAgents as $currentData) {
+                $labels_temp[] = $currentData->name; // Pega o nome do agente
+                $totals_temp[] = $currentData->total; // Pega o total de clientes por agente
+            }
+        }
+        $data['chartLabels'] = '["' . implode('", "', $labels_temp) . '"]';// resultado é uma string =  ['data1', 'data2']
+        $data['chartTotals'] = '["' . implode('", "', $totals_temp) . '"]';
+
         // Renderiza a view "stats", responsável pela exibição dos clientes
-        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
         $this->view('stats', $data); // view de estatísticas
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
-
     }
 }

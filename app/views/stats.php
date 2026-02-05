@@ -56,7 +56,82 @@
 
                 <div class="card p-3">
                     <h4><i class="fa-solid fa-list-ul me-2"></i>Dados estatísticos globais</h4>
-                    [dados estatísticos]
+                    <!-- IF (PHP)-------------------------------------------------------------------- -->
+                    <?php if (empty($clientsPerAgents)): ?>
+                        <p class="my-5 text-center opacity-75">Não existem clientes registados.</p>
+                        <!-- ELSE (PHP)-------------------------------------------------------------------- -->
+                    <?php else: ?>
+                        <div class="row justify-content-center">
+                            <div class="col-5">
+                                <table class="table table-striped">
+                                    <!-- Total de agentes -->
+                                    <tr>
+                                        <td class="text-start">Número total de agentes:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['totalAgents'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- Total de clientes -->
+                                    <tr>
+                                        <td class="text-start">Número total de clientes:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['totalClients'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- Total de clientes inativos -->
+                                    <tr>
+                                        <td class="text-start">Número total de clientes inativos:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['totalClientsInactives'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- Média de clientes por agente -->
+                                    <tr>
+                                        <td class="text-start">Número médio de clientes por agente:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['AverageClientsPerAgent'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- Cliente mais novo -->
+                                    <tr>
+                                        <td class="text-start">Idade do cliente mais novo:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['youngerAge'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- Cliente mais velho -->
+                                    <tr>
+                                        <td class="text-start">Idade do cliente mais velho:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['olderAge'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- Média de idade dos clientes -->
+                                    <tr>
+                                        <td class="text-start">Média de idade dos clientes:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['averageAge'] ?></strong>
+                                        </td>
+                                    </tr>
+                                    <!-- % de clientes homens -->
+                                    <tr>
+                                        <td class="text-start">Portentagem de clientes homens:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['percentageMen'] ?>%</strong>
+                                        </td>
+                                    </tr>
+                                    <!-- % de clientes mulheres -->
+                                    <tr>
+                                        <td class="text-start">Portentagem de clientes mulheres:</td>
+                                        <td class="text-start">
+                                            <strong><?= $globalStatistics['percentageWomen'] ?>%</strong>
+                                        </td>
+                                    </tr>
+                                </table>
+                            </div>
+                        </div>
+                        <!-- ENDIF (PHP)-------------------------------------------------------------------- -->
+                    <?php endif; ?>
                 </div>
 
             </div>
@@ -73,13 +148,12 @@
 </div>
 </div>
 <script>
-
-    <?php if(count($clientsPerAgents) != 0):?>
+    <?php if (count($clientsPerAgents) != 0): ?>
         const ctx = document.getElementById('myChart');
         new Chart('myChart', {
             type: 'bar',
             data: {
-                labels: <?= $chartLabels?>,
+                labels: <?= $chartLabels ?>,
                 datasets: [{
                     label: 'Total de clientes por agente',
                     data: <?= $chartTotals ?>,
@@ -94,6 +168,5 @@
                 }
             }
         });
-    <?php endif;?>
-
+    <?php endif; ?>
 </script>

@@ -132,6 +132,12 @@
                         </div>
                         <!-- ENDIF (PHP)-------------------------------------------------------------------- -->
                     <?php endif; ?>
+                    <div class="text-center">
+                        <a href="?ct=admincontroller&mt=export_statistics_pdf" class="btn btn-secondary px-4">
+                            <i class="fa-solid fa-file-pdf me-2"></i>
+                            Criar relatório em PDF
+                        </a>
+                    </div>
                 </div>
 
             </div>

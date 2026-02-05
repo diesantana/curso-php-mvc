@@ -115,6 +115,9 @@ class AdminController extends BaseController
         $data['chartLabels'] = '["' . implode('", "', $labels_temp) . '"]';// resultado é uma string =  ['data1', 'data2']
         $data['chartTotals'] = '["' . implode('", "', $totals_temp) . '"]';
 
+        // Dados para as estatíticas globais
+        $data['globalStatistics'] = $adminModel->get_global_statistics();
+
         // Renderiza a view "stats", responsável pela exibição dos clientes
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar

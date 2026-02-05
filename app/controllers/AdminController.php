@@ -130,6 +130,9 @@ class AdminController extends BaseController
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 
+    /**
+     * Gera relatórios em PDF das estatísticas globais.
+     */
     public function export_statistics_pdf()
     {
         // Verifica se existe um admin logado

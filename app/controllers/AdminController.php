@@ -152,7 +152,7 @@ class AdminController extends BaseController
         $clientsPerAgents = $adminModel->get_client_count_by_agent();
         // Estatíticas globais
         $globalStatistics = $adminModel->get_global_statistics();
-        
+
         // Cria o arquivo PDF
         $pdf = new Mpdf([
             'mode' => 'utf-8',
@@ -242,5 +242,36 @@ class AdminController extends BaseController
         $pdf->WriteHTML($html);
 
         $pdf->Output();
+    }
+
+    
+    /**
+     * Renderiza a tabela de gestão de agentes. 
+     * Exibe uma lista contendo todos os usuários, sejam eles agentes
+     * ou administradores. 
+     */
+    public function show_agent_management()
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        $adminModel = new AdminModel();
+
+        // Busca os dados dos agentes
+        $agentsData = $adminModel->get_all_agents();
+
+        // Prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+        $data['agentsData'] = $agentsData;
+
+        // Renderiza a view "agents_management"
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('agents_management', $data); // Lista de agentes
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 }

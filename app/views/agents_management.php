@@ -7,7 +7,7 @@
                     <h4>Gestão de agentes</h4>
                 </div>
                 <div class="col text-end">
-                    <a href="#" class="btn btn-secondary"><i class="fa-solid fa-user-plus me-2"></i>Novo agente</a>
+                    <a href="?ct=admincontroller&mt=show_new_agent_form" class="btn btn-secondary"><i class="fa-solid fa-user-plus me-2"></i>Novo agente</a>
                 </div>
             </div>
 
@@ -53,7 +53,7 @@
                     </tbody>
                 </table>
 
-                <div class="row">
+                <div class="row mt-4">
                     <div class="col">
                         <p class="mb-5">Total: <strong><?= count($agentsData) ?></strong></p>
                     </div>

@@ -186,4 +186,48 @@ class AdminModel extends BaseModel
             return ['status' => true];
         }
     }
+
+    /**
+     * Salva o o agente na base de dados.
+     * @param string $email email do agente
+     * @param string $profile perfil do agente
+     * @return Array Array associativo contendo status, email e PURL.
+     * Se a operação não for bem sucedida o retorno será apenas o status = 'error'.
+     */
+    public function add_agent(string $email, string $profile): array
+    {
+
+        $purl = $this->purl_generator(20); // gera o PURL com 20 caracteres
+
+        // Prepara a query
+        $params = [':name' => $email, ':profile' => $profile, ':purl' => $purl];
+        $sql = "
+            INSERT INTO agents (name, profile, purl, last_login, created_at)
+            VALUES (AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "'), :profile, :purl, NOW(), NOW());
+        ";
+
+        $this->db_connect(); // conexão com a base de dados
+
+        // executa a query
+        $result = $this->non_query($sql, $params);
+
+        if($result->affected_rows == 0 ){
+            return ['status' => 'error'];
+        } else {
+            return ['status' => 'success', 'email' => $email, 'purl' => $purl];
+        }
+    }
+
+    /**
+     * Gera um código hash de tamanho personalizado.
+     * @param int $length Tamanho da string a ser gerada.
+     * @return string código hash de tamanho personalizado.
+     */
+    private function purl_generator(int $length): string
+    {
+        // generate purl
+        $chars = 'abcdefghijkabcdefghijkabcdefghijkABCDEFGHIJKABCDEFGHIJKABCDEFGHIJK';
+        $purl = substr(str_shuffle($chars), 0, $length);
+        return $purl;
+    }
 }

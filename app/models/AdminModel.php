@@ -140,9 +140,9 @@ class AdminModel extends BaseModel
     public function get_all_agents(): array
     {
         $this->db_connect(); // Conexão com a base de dados
-        $sql =" 
+        $sql = " 
             SELECT
-                CAST(AES_DECRYPT(a.name,'". MYSQL_AES_KEY ."') AS CHAR) AS name,
+                CAST(AES_DECRYPT(a.name,'" . MYSQL_AES_KEY . "') AS CHAR) AS name,
                 a.profile,
                 a.last_login,
                 COALESCE(p.total, 0) AS total
@@ -160,5 +160,30 @@ class AdminModel extends BaseModel
         // Executa a query
         $results = $this->query($sql);
         return $results->results;
+    }
+
+    /**
+     * Verifica se o agente existe com base no email. 
+     * @param string $email Email do agente a ser verificado.
+     * @return array 
+     * - "['status'] = true" Se o agente já existe
+     * - "['status'] = false" Se o agente não existe
+     */
+    public function check_if_agent_exists(string $email): array
+    {
+        // Prepara a query 
+        $params = [':name' => $email]; // A coluna email está salvo como "name" na base de dados. 
+        $sql = "SELECT  id FROM agents WHERE AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "') = name";
+        // conexão com a base de dados
+        $this->db_connect();
+
+        // exceuta a query
+        $result = $this->query($sql, $params);
+
+        if ($result->affected_rows == 0) {
+            return ['status' => false];
+        } else {
+            return ['status' => true];
+        }
     }
 }

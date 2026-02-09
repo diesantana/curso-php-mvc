@@ -25,11 +25,11 @@
                                 <div class="alert alert-danger p-2 text-center"><?= $serverErrors ?></div>
                             <?php endif; ?>
 
-                        <form action="#" method="post">
+                        <form action="?ct=admincontroller&mt=handle_new_agent" method="post" novalidate>
 
                             <div class="mb-3">
-                                <label for="text_name" class="form-label">Nome do agente</label>
-                                <input type="email" name="text_name" id="text_name" value="" class="form-control" required>
+                                <label for="text_email" class="form-label">Email</label>
+                                <input type="email" name="text_email" id="text_email" value="" class="form-control" required>
                             </div>
 
                             <div class="mb-3">
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="mb-3 text-center">
-                                <a href="#" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
+                                <a href="" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
                                 <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-user-plus me-2"></i>Criar agente</button>
                             </div>
 

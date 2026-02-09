@@ -275,6 +275,9 @@ class AdminController extends BaseController
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 
+    /**
+     * Renderiza o formulário para adicionar um novo agente.
+     */
     public function show_new_agent_form()
     {
         // Verifica se existe um admin logado
@@ -306,5 +309,53 @@ class AdminController extends BaseController
         $this->view('agents_add_new_frm', $data); // Formulário de cadastro de agentes
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
+
+    /**
+     * Trata a submissão do formulário para adicionar um novo agente.
+     */
+    public function handle_new_agent()
+    {
+        // Verifica se existe um admin logado e se o form foi submetido corretamente
+        if (!checkSession() || $_SESSION['user']->profile != 'admin' || $_SERVER['REQUEST_METHOD'] != 'POST') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Dados recebidos
+        $email = trim($_POST['text_email'] ?? '');
+        $profile = trim($_POST['select_profile'] ?? '');
+
+        $validationErrors = [];
+
+        // Validação do email
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $validationErrors[] = "O campo email deve ser um email válido";
+        }
+
+        if ($profile != 'admin' && $profile != 'agent') {
+            $validationErrors[] = "O perfil selecionado é inválido!";
+        }
+
+        // Verifica se existem erros
+        if (!empty($validationErrors)) {
+            $_SESSION['validationErrors'] = $validationErrors;
+            $this->show_new_agent_form();
+            exit;
+        }
+
+        // Valida se já existe um  agente com o mesmo email
+        $adminModel = new AdminModel();
+        $agentExist = $adminModel->check_if_agent_exists($email);
+
+        if ($agentExist['status']) {
+            $_SESSION['validationErrors'][] = 'Já existe um agente cadastrado com o mesmo email';
+            $this->show_new_agent_form();
+            exit;
+        }
+
+
+        // Aqui o agente ainda não existe, vamos persistir os dados na base.
+        printData($agentExist);
     }
 }

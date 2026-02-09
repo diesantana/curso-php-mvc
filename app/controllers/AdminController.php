@@ -244,7 +244,7 @@ class AdminController extends BaseController
         $pdf->Output();
     }
 
-    
+
     /**
      * Renderiza a tabela de gestão de agentes. 
      * Exibe uma lista contendo todos os usuários, sejam eles agentes
@@ -271,6 +271,39 @@ class AdminController extends BaseController
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
         $this->view('agents_management', $data); // Lista de agentes
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
+
+    public function show_new_agent_form()
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Verifica se há mensagens de validação guardadas na sessão
+        if (!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors'];
+            // Limpa os erros de validação na sessão
+            unset($_SESSION['validationErrors']);
+        }
+
+        // Verifica se há mensagens de erro no servidor guardadas na sessão
+        if (!empty($_SESSION['serverErrors'])) {
+            $data['serverErrors'] = $_SESSION['serverErrors'];
+            // Limpa os erros do servidor na sessão
+            unset($_SESSION['serverErrors']);
+        }
+
+        // Prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+
+        // Renderiza a view "agents_add_new_frm"
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('agents_add_new_frm', $data); // Formulário de cadastro de agentes
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }

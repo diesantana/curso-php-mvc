@@ -32,6 +32,7 @@ class AdminModel extends BaseModel
         return $results->results;
     }
 
+
     /**
      * Busca o total de clientes por agente
      * @return Array Array contendo os dados dos agentes e a quantidade 
@@ -99,7 +100,7 @@ class AdminModel extends BaseModel
             WHERE birthdate IS NOT NULL;
         ");
         $result['youngerAge'] = $queryYoungerAge->results[0]->younger;
-        
+
         // Idade do cliente mais velho
         $queryOlderAge = $this->query("
             SELECT MAX(TIMESTAMPDIFF(YEAR, birthdate, CURDATE())) AS older
@@ -130,5 +131,34 @@ class AdminModel extends BaseModel
         $result['percentageWomen'] = $queryClientsByGender->results[0]->pct_mulheres;
 
         return $result;
+    }
+
+    /**
+     * Busca Todos os Agentes na base de dados
+     * @return Array Array contendo os dados dos agentes em formato stdClass Object
+     */
+    public function get_all_agents(): array
+    {
+        $this->db_connect(); // Conexão com a base de dados
+        $sql =" 
+            SELECT
+                CAST(AES_DECRYPT(a.name,'". MYSQL_AES_KEY ."') AS CHAR) AS name,
+                a.profile,
+                a.last_login,
+                COALESCE(p.total, 0) AS total
+            FROM agents a
+            LEFT JOIN (
+                SELECT
+                id_agent,
+                COUNT(*) AS total
+                FROM persons
+                GROUP BY id_agent
+            ) p ON p.id_agent = a.id
+            WHERE a.deleted_at IS NULL
+            ORDER BY name;";
+
+        // Executa a query
+        $results = $this->query($sql);
+        return $results->results;
     }
 }

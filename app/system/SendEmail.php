@@ -67,4 +67,18 @@ class SendEmail
         $html .= "<a href='{$link}'>Concluir registro de agente</a>";
         return $html;
     }
+
+    /**
+     * Monta o corpo alternativo do email, utilizando apenas texto.
+     * @param string $link URL para o cadastro de senha.
+     * @return string Corpo do email em formato txt. 
+     */
+    private function generate_alt_email_body(string $link): string
+    {
+        return <<<TEXT
+                Para concluir o processo de registro de agente, acesse o link abaixo:
+
+                {$link}
+        TEXT;
+    }
 }

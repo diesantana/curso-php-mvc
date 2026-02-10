@@ -6,6 +6,7 @@ namespace bng\Controllers;
 
 use bng\Controllers\BaseController;
 use bng\Models\AdminModel;
+use bng\System\SendEmail;
 use Mpdf\Mpdf;
 use PhpOffice\PhpSpreadsheet\Spreadsheet;
 use PhpOffice\PhpSpreadsheet\Worksheet\Worksheet;
@@ -354,8 +355,46 @@ class AdminController extends BaseController
             exit;
         }
 
+        // Salva o agente na base de dados
+        $resultAddAgent = $adminModel->add_agent($email, $profile);
 
-        // Aqui o agente ainda não existe, vamos persistir os dados na base.
-        printData($agentExist);
+        // Verifica se o cadastro foi realizado
+        if ($resultAddAgent['status'] != 'success') {
+            $_SESSION['serverError'][] = 'Ocorreu um erro ao salvar os dados do Agente, tente novamente mais tarde.';
+            logger(get_active_username() . '- Não foi possível salvar o agente na base de dados', 'error');
+            $this->show_new_agent_form();
+            exit;
+        }
+
+        $emailService = new SendEmail(); // Serviço para envio de emails 
+
+        // Monta a PURL
+        $url = explode('?', $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
+        // Ex: $url =  ['localhost/BNG/public/', '?ct=admincontroller&mt=handle_new_agent']
+        $url = $url[0] . '?ct=main&mt=show_define_password_form&purl=' . $resultAddAgent['purl'];
+        // Ex de url: localhost/BNG/public/?ct=main&mt=show_define_password_form&purl=hash
+        $email = $resultAddAgent['email'];
+
+        // Envia o email
+        $resultSendEmail = $emailService->send_agent_password_setup_email($email, $url);
+
+        // Verifica se o cadastro foi realizado
+        if ($resultSendEmail['status'] != 'success') {
+            logger(get_active_username() . '- Não foi possível enviar o email de configuração de senha', 'error');
+            $this->show_agent_management(); // Exibe a lista de agentes
+            exit;
+        }
+
+        // Renderiza a view de sucesso
+
+        // Prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+        $data['email'] = $email;
+
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('agents_email_sent', $data); // View de sucesso ao enviar o email
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 }

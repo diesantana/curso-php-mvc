@@ -17,7 +17,7 @@ class SendEmail
      * @param string $altEmailBody Corpo alternativo para o email (txt).
      * @return array Retorna um array contendo status da operação (success ou error) e mensagem.
      */
-    public function sendEmail(array $recipients, string $subject, string $emailBody, string $altEmailBody): array
+    private function sendEmail(array $recipients, string $subject, string $emailBody, string $altEmailBody): array
     {
         $mail = new PHPMailer(true); // Instancia o obj e ativa as exceções
 

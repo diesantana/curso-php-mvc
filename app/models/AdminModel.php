@@ -211,10 +211,32 @@ class AdminModel extends BaseModel
         // executa a query
         $result = $this->non_query($sql, $params);
 
-        if($result->affected_rows == 0 ){
+        if ($result->affected_rows == 0) {
             return ['status' => 'error'];
         } else {
             return ['status' => 'success', 'email' => $email, 'purl' => $purl];
+        }
+    }
+
+    /**
+     * Verifica se a PURL está associada a algum agente na base de dados.
+     * @param string $purl PURL a ser verificada.
+     * @return array Array associativo contendo status (false se erro e true se sucesso)
+     * e o id (se sucesso).
+     */
+    public function check_the_purl(string $purl): array
+    {
+        // Prepara a query
+        $params = [':purl' => $purl];
+        $sql = "SELECT id FROM agents WHERE :purl = purl;";
+        $this->db_connect(); // conexão com a base de dados
+        // executa a query
+        $results = $this->query($sql, $params);
+
+        if ($results->affected_rows == 0) {
+            return ['status' => false];
+        } else {
+            return ['status' => true, 'id' => $results->results[0]->id];
         }
     }
 

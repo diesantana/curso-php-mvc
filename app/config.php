@@ -18,3 +18,11 @@ define('LOGS_PATH', __DIR__ . '/../logs/app.log');
 define('OPENSSL_KEY', 'H0SDRQzIGqclX2kbYBk9xspdn9U5f3Wa');
 define('OPENSSL_IV', 'BzKAbjuREsHgnw56');
 define('OPENSSL_ALGORITHM', 'AES-256-CBC');
+
+// Config de email
+define('EMAIL_HOST', '');
+define('EMAIL_USERNAME', '');
+define('EMAIL_PASSWORD', '');
+define('EMAIL_PORT', '');
+define('EMAIL_FROM', 'management@bng.com');
+define('EMAIL_FROM_NAME', 'BNG - Basic Name Gathering');

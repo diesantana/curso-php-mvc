@@ -9,6 +9,27 @@ use PHPMailer\PHPMailer\PHPMailer;
 
 class SendEmail
 {
+
+    /**
+     * Envia um email de configuração de senha do agente via PURL.
+     * @param string $email Email do agente.
+     * @param string $link PURL a ser enviado no e-mail.
+     * @return array Retorna um array contendo status da operação (success ou error) e mensagem.
+     */
+    public function send_agent_password_setup_email(string $email, string $link): array
+    {
+        $htmlBody = $this->generate_email_body($link);
+        $altBody  = $this->generate_alt_email_body($link);
+
+        return $this->sendEmail(
+            [$email],
+            'Concluir registo de agente',
+            $htmlBody,
+            $altBody
+        );
+    }
+
+
     /**
      * Envia um e-mail (HTML) para um ou mais destinarátios usando PHPMailer.
      * @param array $recipients Lista de destinatários.
@@ -54,7 +75,6 @@ class SendEmail
             return ['status' => 'error', 'message' => $mail->ErrorInfo];
         }
     }
-
 
     /**
      * Monta o corpo do email.

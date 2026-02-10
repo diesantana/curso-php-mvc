@@ -9,21 +9,21 @@
                         <h4><strong>Adicionar novo agente</strong></h4>
 
                         <hr>
-                                                    <!-- Exibe erros de validação -->
-                            <?php if (!empty($validationErrors)): ?>
-                                <div class="alert alert-danger p-2 text-center">
-                                    <ul>
-                                        <?php foreach ($validationErrors as $error): ?>
-                                            <li><?= $error ?></li>
-                                        <?php endforeach; ?>
-                                    </ul>
-                                </div>
-                            <?php endif; ?>
+                        <!-- Exibe erros de validação -->
+                        <?php if (!empty($validationErrors)): ?>
+                            <div class="alert alert-danger p-2 text-center">
+                                <ul>
+                                    <?php foreach ($validationErrors as $error): ?>
+                                        <li><?= $error ?></li>
+                                    <?php endforeach; ?>
+                                </ul>
+                            </div>
+                        <?php endif; ?>
 
-                            <!-- Exibe erros no servidor -->
-                            <?php if (!empty($serverErrors)): ?>
-                                <div class="alert alert-danger p-2 text-center"><?= $serverErrors ?></div>
-                            <?php endif; ?>
+                        <!-- Exibe erros no servidor -->
+                        <?php if (!empty($serverErrors)): ?>
+                            <div class="alert alert-danger p-2 text-center"><?= $serverErrors ?></div>
+                        <?php endif; ?>
 
                         <form action="?ct=admincontroller&mt=handle_new_agent" method="post" novalidate>
 
@@ -41,7 +41,7 @@
                             </div>
 
                             <div class="mb-3 text-center">
-                                <a href="" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
+                                <a href="?ct=admincontroller&mt=show_agent_management" class="btn btn-secondary"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
                                 <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-user-plus me-2"></i>Criar agente</button>
                             </div>
 

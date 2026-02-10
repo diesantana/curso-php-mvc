@@ -32,7 +32,7 @@
                     <tbody>
                         <!-- Dados dos agentes -->
                         <?php foreach ($agentsData as $currentAgent): ?>
-                            <tr class="<?= $currentAgent->profile == 'admin' ? 'table-secondary text-muted' : '' ?>">
+                            <tr>
                                 <td><?= $currentAgent->name ?></td>
                                 <td class="text-center"><?= $currentAgent->profile ?></td>
                                 <td class="text-center"><?= $currentAgent->last_login ?></td>

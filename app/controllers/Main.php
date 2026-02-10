@@ -3,6 +3,7 @@
 namespace bng\Controllers;
 
 use bng\Controllers\BaseController;
+use bng\Models\AdminModel;
 use bng\Models\Agents;
 
 class Main extends BaseController
@@ -309,5 +310,48 @@ class Main extends BaseController
         $_SESSION['successMsg'] = 'Password Atualizada com sucesso';
         $this->show_change_password_form();
         return;
+    }
+
+    /**
+     * Renderizar a view de cadastro de senha.
+     */
+    public function show_define_password_form(string $purl = '')
+    {
+        // Verifica se não existe nenhum agente autenticado
+        if (checkSession()) {
+            header('Location: index.php');
+            exit;
+            // redirecionada para o index.php que consequentemente vai chamar o método index() do controlador main
+        }
+
+        // Valida se a PURL é válida
+        $adminModel = new AdminModel();
+        $resultValidatingPurl = $adminModel->check_the_purl($purl);
+
+        if (empty($purl) || strlen($purl) != 20 || !$resultValidatingPurl['status']) {
+            die("Erro nas credencias de acesso. Entre em contato com o suporte para mais detalhes.");
+        }
+
+        // Prepara os dados da PURL e id para renderizar a view
+        $data['purl'] = $purl;
+        $data['id'] = $resultValidatingPurl['id'];
+
+        // Verifica se existem erros de validação 
+        if (!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['validationErrors']); // Exclui os erros após serem tratados.
+        }
+
+        // Verifica se existem erros do servidor 
+        if (!empty($_SESSION['serverErrors'])) {
+            $data['serverErrors'] = $_SESSION['serverErrors']; // Armazena os erros para serem exibidos na view
+            unset($_SESSION['serverErrors']); // Exclui os erros após serem tratados.
+        }
+
+        // Renderiza as views
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('new_agent_define_password', $data); // formulário de cadastro de senha
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
+
     }
 }

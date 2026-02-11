@@ -112,7 +112,7 @@ function aes_encrypt(string $value): string {
 function aes_decrypt(string $hexValue): string|false {
     // Verifica se a string hex tem comprimento par
     // A string hex deve ter comprimento par.
-    if(strlen($hexValue) % 2 !== 0) {
+    if($hexValue == 0 || strlen($hexValue) % 2 !== 0) {
         return false; // valor inválido
     }
 

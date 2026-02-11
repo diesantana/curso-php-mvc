@@ -403,7 +403,7 @@ class Agents extends BaseModel
         if ($resultQuery->affected_rows >= 1) {
             return ['status' => true];
         } else {
-            return ['status' => true];
+            return ['status' => false];
         }
     }
 }

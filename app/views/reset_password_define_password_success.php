@@ -10,10 +10,10 @@
 
                 <h1 class="text-center text-success mb-3"><i class="fa-solid fa-circle-check"></i></h1>
 
-                <p class="text-center">A sua nova password foi definida com sucesso.</p>
+                <p class="text-center">A sua senha foi definida com sucesso.</p>
 
                 <div class="text-center my-3">
-                    <a href="#" class="btn btn-secondary px-4"><i class="fa-solid fa-chevron-left me-2"></i>Voltar</a>
+                    <a href="?ct=main&mt=index" class="btn btn-secondary px-4"><i class="fa-solid fa-chevron-left me-2"></i>Fazer Login</a>
                 </div>
                 
             </div>

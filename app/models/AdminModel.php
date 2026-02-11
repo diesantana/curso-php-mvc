@@ -241,6 +241,34 @@ class AdminModel extends BaseModel
     }
 
     /**
+     * Atualiza a senha na base de dados.
+     * @param int $agentId ID do agente.
+     * @param string $password Senha a ser cadastrada.
+     * @return array Se ['status'] = TRUE operação realizada com sucesso ou FALSE se ocorrer um erro. 
+     * 
+     */
+    public function created_password(int $agentId, string $password): array
+    {
+        // Transforma a senha em hash
+        $password = password_hash($password, PASSWORD_DEFAULT);
+        // Prepara a query
+        $params = [':id' => $agentId, ':password' => $password];
+        $sql = 'UPDATE agents SET passwrd = :password, purl = NULL, updated_at = NOW() WHERE id = :id';
+
+        // Conexão com a base de dados
+        $this->db_connect();
+
+        // Executa a query
+        $resultQuery = $this->non_query($sql, $params);
+
+        if ($resultQuery->affected_rows >= 1) {
+            return ['status' => true];
+        } else {
+            return ['status' => false];
+        }
+    }
+
+    /**
      * Gera um código hash de tamanho personalizado.
      * @param int $length Tamanho da string a ser gerada.
      * @return string código hash de tamanho personalizado.

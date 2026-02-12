@@ -354,4 +354,78 @@ class Main extends BaseController
         $this->view('layouts/html_footer'); // Estrutura final do HTML
 
     }
+
+    /**
+     * Trata a submissão do cadastro de senhas.
+     */
+    public function handle_define_password()
+    {
+        // Verifica se a requisição é válida
+        if (checkSession() || $_SERVER['REQUEST_METHOD'] != 'POST') {
+            header('Location: index.php');
+            exit;
+        }
+
+        $validationErrors = []; // Armazena os erros de validação
+        $serverErrors = []; // Armazena os erros de servidor
+
+        // Dados recebidos
+        $id = aes_decrypt($_POST['id'] ?? 0);
+        $purl = $_POST['purl'] ?? '';
+        $password = $_POST['text_password'] ?? '';
+        $repeatPassword = $_POST['text_repeat_password'] ?? '';
+
+        // Valida o ID  e PURL
+        if (empty($purl) || strlen($purl) != 20 || empty($id)) {
+            $serverErrors[] = 'Ocorreu um erro ao cadastrar a senha, entre em contato com o suporte ou tente novamente mais tarde';
+        }
+
+        // Valida o campo "password"
+        if (empty($password)) {
+            $validationErrors[] = 'O campo "Password" é de preenchimento obrigatório';
+        } else if (strlen($password) < 6 || strlen($password) > 12) {
+            $validationErrors[] = 'A Senha deve ter entre 6 e 12 caracteres';
+        } else if (!preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/', $password)) {
+            $validationErrors[] = 'A password deve conter pelo menos uma letra maiúscula, uma minúscula e um dígito.';
+        }
+
+        // Valida o campo Repetir password
+        if (empty($repeatPassword)) {
+            $validationErrors[] = 'O campo "Repetir password" é de preenchimento obrigatório';
+        } else if ($password != $repeatPassword) {
+            $validationErrors[] = 'Os campos "Password" e "Repetir password" devem ser iguais';
+        }
+
+        // Tratando os erros de validação
+        if (!empty($validationErrors)) {
+            $_SESSION['validationErrors'] = $validationErrors;
+            $this->show_define_password_form($purl);
+            exit;
+        }
+
+        // Tratando os erros de servidor
+        if (!empty($serverErrors)) {
+            $_SESSION['serverErrors'] = $serverErrors;
+            $this->show_define_password_form($purl);
+            exit;
+        }
+
+        // Cadastra a senha
+        $adminModel = new AdminModel();
+        $resultsAddPassword = $adminModel->created_password($id, $password);
+
+        if (!$resultsAddPassword['status']) {
+            $_SESSION['serverErrors'][] = 'Ocorreu um erro ao salvar a senha. Entre em contato com o suporte ou tente novamente mais tarde';
+            $this->show_define_password_form($purl);
+            return;
+        }
+
+        // Log da operação
+        logger(' O agente de id:' . $id . ' Definiu a password!');
+
+        // Renderiza a view de sucesso
+        $this->view('layouts/html_header'); // Estrutura inicial do HTML
+        $this->view('reset_password_define_password_success');
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
 }

@@ -43,7 +43,7 @@
                                             <i class="fa-solid fa-lock me-2"></i>Somente leitura
                                         </span>
                                     <?php else: ?>
-                                        <a href="<?= '?ct=admincontroller&mt=show_user_edit_form&id=' . $currentAgent->id ?>">
+                                        <a href="<?= '?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id)?>">
                                             <i class="fa-regular fa-pen-to-square me-2"></i>Editar
                                         </a>
                                         <span class="mx-2 opacity-50">|</span>

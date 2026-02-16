@@ -10,9 +10,16 @@
 
                         <hr>
 
+                        <!-- Mensagem de sucesso -->
+                        <?php if(isset($successMessage)):?>
+                        <div class="alert alert-success p-2 text-center">
+                            <p><?= $successMessage ?></li></p>
+                        </div>
+                        <?php endif?>
+
                         <form action="?ct=admincontroller&mt=handle_agent_editing" method="post" novalidate>
                             <!-- ID -->
-                            <input type="hidden" name="id"value="<?= $agent->id ?>">
+                            <input type="hidden" name="id" value="<?= aes_encrypt($agent->id) ?>">
 
                             <div class="mb-3">
                                 <label for="text_name" class="form-label">Nome do agente</label>

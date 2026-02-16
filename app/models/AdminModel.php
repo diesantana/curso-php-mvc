@@ -308,4 +308,62 @@ class AdminModel extends BaseModel
             return ['status' => true, 'data' => $resultQuery->results[0]];
         }
     }
+
+    /**
+     * Atualiza o agente na base de dados.
+     * @param string $id Id encriptado do agente a ser atualizado
+     * @param string $email novo email
+     * @param string $profile perfil do agente
+     * @return Array Array associativo contendo status da operação (true ou false)
+     */
+    public function update_agent(string $id, string $email, string $profile): array
+    {
+
+        // Prepara a query
+        $params = [':name' => $email, ':profile' => $profile, ':id' => aes_decrypt($id)];
+        $sql = "
+            UPDATE agents SET name = AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "'), 
+            profile = :profile, updated_at = NOW() WHERE id = :id;
+        ";
+
+        $this->db_connect(); // conexão com a base de dados
+
+        // executa a query
+        $result = $this->non_query($sql, $params);
+
+        if ($result->affected_rows == 0) {
+            return ['status' => false];
+        } else {
+            return ['status' => true];
+        }
+    }
+
+
+    /**
+     * Verifica se o nome está disponível para atualização.
+     * @param string $id Id do agente a ser atualizado.
+     * @param string $email Email ou Username do agente a ser verificado.
+     * @return array 
+     * - "['status'] = true" Se o agente já existe
+     * - "['status'] = false" Se o agente não existe
+     */
+    public function verify_name_is_available(string $id ,string $email): array
+    {
+        // Prepara a query 
+        $params = [':id' => aes_decrypt($id) ,':name' => $email]; 
+        $sql = "SELECT  id FROM agents 
+                WHERE AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "') = name
+                AND id <> :id";
+        // conexão com a base de dados
+        $this->db_connect();
+
+        // exceuta a query
+        $result = $this->query($sql, $params);
+
+        if ($result->affected_rows == 0) {
+            return ['status' => false];
+        } else {
+            return ['status' => true];
+        }
+    }
 }

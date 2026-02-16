@@ -142,6 +142,7 @@ class AdminModel extends BaseModel
         $this->db_connect(); // Conexão com a base de dados
         $sql = " 
             SELECT
+                a.id,
                 CAST(AES_DECRYPT(a.name,'" . MYSQL_AES_KEY . "') AS CHAR) AS name,
                 a.profile,
                 a.last_login,

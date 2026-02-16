@@ -281,4 +281,31 @@ class AdminModel extends BaseModel
         $purl = substr(str_shuffle($chars), 0, $length);
         return $purl;
     }
+
+    /**
+     * Busca os dados do utilizador (admin ou agent) por id.
+     * Busca apenas o nome e perfil para atualização.
+     * @param string $id Id do agente. 
+     * @return array Array associativo contendo dois valores:
+     * - 'status' da operação (true = success ou false = error)
+     * - 'data' contendo os dados da consulta se não der nenhum erro
+     */
+    public function get_agent_by_id(string $id): array
+    {
+        // conexão com a base de dados
+        $this->db_connect();
+
+        // prepara a query
+        $params = [':id' => $id];
+        $sql = "SELECT id, AES_DECRYPT(name, '" . MYSQL_AES_KEY . "') AS name, profile FROM agents WHERE id = :id;";
+
+        // executa a query
+        $resultQuery = $this->query($sql, $params);
+
+        if ($resultQuery->status == 'error') {
+            return ['status' => false];
+        } else {
+            return ['status' => true, 'data' => $resultQuery->results[0]];
+        }
+    }
 }

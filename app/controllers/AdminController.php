@@ -362,10 +362,10 @@ class AdminController extends BaseController
         }
 
         // Salva o agente na base de dados
-        $resultAddAgent = $adminModel->add_agent($email, $profile);
+        $resultUpdate = $adminModel->add_agent($email, $profile);
 
         // Verifica se o cadastro foi realizado
-        if ($resultAddAgent['status'] != 'success') {
+        if ($resultUpdate['status'] != 'success') {
             $_SESSION['serverError'][] = 'Ocorreu um erro ao salvar os dados do Agente, tente novamente mais tarde.';
             logger(get_active_username() . '- Não foi possível salvar o agente na base de dados', 'error');
             $this->show_new_agent_form();
@@ -377,9 +377,9 @@ class AdminController extends BaseController
         // Monta a PURL
         $url = explode('?', $_SERVER['SERVER_NAME'] . $_SERVER['REQUEST_URI']);
         // Ex: $url =  ['localhost/BNG/public/', '?ct=admincontroller&mt=handle_new_agent']
-        $url = $url[0] . '?ct=main&mt=show_define_password_form&purl=' . $resultAddAgent['purl'];
+        $url = $url[0] . '?ct=main&mt=show_define_password_form&purl=' . $resultUpdate['purl'];
         // Ex de url: localhost/BNG/public/?ct=main&mt=show_define_password_form&purl=hash
-        $email = $resultAddAgent['email'];
+        $email = $resultUpdate['email'];
 
         // Envia o email
         $resultSendEmail = $emailService->send_agent_password_setup_email($email, $url);
@@ -435,8 +435,6 @@ class AdminController extends BaseController
         $data['user'] = $_SESSION['user'];
         $data['agent'] = $results['data'];
 
-        printData($data);
-
         // Verifica se há mensagens de validação guardadas na sessão
         if (!empty($_SESSION['validationErrors'])) {
             $data['validationErrors'] = $_SESSION['validationErrors'];
@@ -450,6 +448,13 @@ class AdminController extends BaseController
             // Limpa os erros do servidor na sessão
             unset($_SESSION['serverErrors']);
         }
+        
+        // Verifica se há mensagens de sucesso na sessão
+        if (!empty($_SESSION['successMessage'])) {
+            $data['successMessage'] = $_SESSION['successMessage'];
+            // Limpa os erros do servidor na sessão
+            unset($_SESSION['successMessage']);
+        }
 
         // Renderiza a view de update de agentes
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
@@ -457,5 +462,69 @@ class AdminController extends BaseController
         $this->view('agents_edit_frm', $data); // Formulário de update de agentes
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
+
+    /**
+     * Lida com a lógica para editar um agente.
+     */
+    function handle_agent_editing()
+    {
+        // Verifica se existe um admin logado e se o form foi submetido corretamente
+        if (!checkSession() || $_SESSION['user']->profile != 'admin' || $_SERVER['REQUEST_METHOD'] != 'POST') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Dados recebidos
+        $id = trim($_POST['id'] ?? '');
+        $email = trim($_POST['text_name'] ?? '');
+        $profile = trim($_POST['select_profile'] ?? '');
+
+        $validationErrors = [];
+
+        // Validação do email
+        if (empty($email) || !filter_var($email, FILTER_VALIDATE_EMAIL)) {
+            $validationErrors[] = "O campo email deve ser um email válido";
+        }
+
+        if ($profile != 'admin' && $profile != 'agent') {
+            $validationErrors[] = "O perfil selecionado é inválido!";
+        }
+
+        // Verifica se existem erros
+        if (!empty($validationErrors)) {
+            $_SESSION['validationErrors'] = $validationErrors;
+            $this->show_user_edit_form($id);
+            exit;
+        }
+
+        // Valida se já existe um  agente com o mesmo email
+        $adminModel = new AdminModel();
+        $agentExist = $adminModel->verify_name_is_available($id, $email);
+
+        if ($agentExist['status']) {
+            $_SESSION['validationErrors'][] = 'Já existe um agente cadastrado com o mesmo email';
+            $this->show_user_edit_form($id);
+            exit;
+        }
+
+        // Atualiza o agente na base de dados
+        $resultUpdate = $adminModel->update_agent($id, $email, $profile);
+
+        // Verifica se o update foi realizado
+        if (!$resultUpdate['status']) {
+            $_SESSION['serverError'][] = 'Ocorreu um erro ao atualizar os dados do Agente, tente novamente mais tarde.';
+            logger(get_active_username() . '- Não foi possível atualizar o agente na base de dados', 'error');
+            $this->show_user_edit_form($id);
+            exit;
+        }
+
+        // Logger da operação
+        logger(get_active_username() . '- Dados do agente de ID: ' . aes_decrypt($id) . ' Atualizados com sucesso.');
+        $_SESSION['successMessage'] = 'Dados atualizados com sucesso';
+
+        // Chama a view para exibir a mensagem de sucesso
+        $this->show_user_edit_form($id);
+        exit;
     }
 }

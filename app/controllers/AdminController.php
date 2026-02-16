@@ -245,7 +245,6 @@ class AdminController extends BaseController
         $pdf->Output();
     }
 
-
     /**
      * Renderiza a tabela de gestão de agentes. 
      * Exibe uma lista contendo todos os usuários, sejam eles agentes
@@ -253,6 +252,8 @@ class AdminController extends BaseController
      */
     public function show_agent_management()
     {
+
+
         // Verifica se existe um admin logado
         if (!checkSession() || $_SESSION['user']->profile != 'admin') {
             header('Location: index.php');
@@ -263,6 +264,11 @@ class AdminController extends BaseController
 
         // Busca os dados dos agentes
         $agentsData = $adminModel->get_all_agents();
+
+        // Encripta o ID
+        foreach ($agentsData as $currentAgent) {
+            $currentAgent->id = aes_encrypt((string) $currentAgent->id);
+        }
 
         // Prepara os dados para a view
         $data['user'] = $_SESSION['user'];
@@ -385,15 +391,70 @@ class AdminController extends BaseController
             exit;
         }
 
-        // Renderiza a view de sucesso
-
         // Prepara os dados para a view
         $data['user'] = $_SESSION['user'];
         $data['email'] = $email;
 
+        // Renderiza a view de sucesso
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
         $this->view('navbar', $data); // navbar
         $this->view('agents_email_sent', $data); // View de sucesso ao enviar o email
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
+    }
+
+    /**
+     * Renderiza o formulário de edição de utilizadores.
+     * @param string $id Id encriptado do usuário a ser editado.
+     */
+    public function show_user_edit_form(string $id)
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Verifica se o ID é válido
+        $id = aes_decrypt($id);
+
+        if (empty($id)) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            exit;
+        }
+        // Busca os dados do agente 
+        $adminModel = new AdminModel();
+        $results = $adminModel->get_agent_by_id($id);
+
+        if (!$results['status'] || empty($results['data'])) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            exit;
+        }
+
+        // Prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+        $data['agent'] = $results['data'];
+
+        printData($data);
+
+        // Verifica se há mensagens de validação guardadas na sessão
+        if (!empty($_SESSION['validationErrors'])) {
+            $data['validationErrors'] = $_SESSION['validationErrors'];
+            // Limpa os erros de validação na sessão
+            unset($_SESSION['validationErrors']);
+        }
+
+        // Verifica se há mensagens de erro no servidor guardadas na sessão
+        if (!empty($_SESSION['serverErrors'])) {
+            $data['serverErrors'] = $_SESSION['serverErrors'];
+            // Limpa os erros do servidor na sessão
+            unset($_SESSION['serverErrors']);
+        }
+
+        // Renderiza a view de update de agentes
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('agents_edit_frm', $data); // Formulário de update de agentes
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }

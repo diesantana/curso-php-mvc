@@ -38,15 +38,17 @@
                                 <td class="text-center"><?= $currentAgent->last_login ?></td>
                                 <td class="text-center"><?= $currentAgent->total ?></td>
                                 <td class="text-end">
-                                    <?php if($currentAgent->profile == 'admin'):?>
-                                    <span class="badge bg-secondary">
-                                        <i class="fa-solid fa-lock me-2"></i>Somente leitura
-                                    </span>
-                                    <?php else:?>
-                                    <a href="#"><i class="fa-regular fa-pen-to-square me-2"></i>Editar</a>
-                                    <span class="mx-2 opacity-50">|</span>
-                                    <a href="#"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
-                                    <?php endif;?>
+                                    <?php if ($currentAgent->profile == 'admin'): ?>
+                                        <span class="badge bg-secondary">
+                                            <i class="fa-solid fa-lock me-2"></i>Somente leitura
+                                        </span>
+                                    <?php else: ?>
+                                        <a href="<?= '?ct=admincontroller&mt=show_user_edit_form&id=' . $currentAgent->id ?>">
+                                            <i class="fa-regular fa-pen-to-square me-2"></i>Editar
+                                        </a>
+                                        <span class="mx-2 opacity-50">|</span>
+                                        <a href="#"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
+                                    <?php endif; ?>
                                 </td>
                             </tr>
                         <?php endforeach; ?>

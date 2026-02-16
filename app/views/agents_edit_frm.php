@@ -10,29 +10,48 @@
 
                         <hr>
 
-                        <form action="#" method="post">
+                        <form action="?ct=admincontroller&mt=handle_agent_editing" method="post" novalidate>
+                            <!-- ID -->
+                            <input type="hidden" name="id"value="<?= $agent->id ?>">
 
                             <div class="mb-3">
                                 <label for="text_name" class="form-label">Nome do agente</label>
-                                <input type="email" name="text_name" id="text_name" value="" class="form-control" required>
+                                <input type="email" name="text_name" id="text_name" value="<?= $agent->name ?>" class="form-control" required>
                             </div>
 
                             <div class="mb-3">
                                 <label for="select_profile" class="form-label">Perfil</label>
                                 <select name="select_profile" id="select_profile" class="form-control" required>
-                                    <option value="admin">Administrador</option>
-                                    <option value="agente">Agente</option>
+                                    <option value="admin" <?= $agent->profile == 'admin' ? 'selected' : '' ?>>Administrador</option>
+                                    <option value="agent" <?= $agent->profile == 'agent' ? 'selected' : '' ?>>Agente</option>
                                 </select>
                             </div>
-                            
+
                             <div class="mb-3 text-center">
-                                <a href="#" class="btn btn-secondary px-4"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
+                                <a href="?ct=admincontroller&mt=show_agent_management" class="btn btn-secondary px-4"><i class="fa-solid fa-xmark me-2"></i>Cancelar</a>
                                 <button type="submit" class="btn btn-secondary px-4"><i class="fa-solid fa-pen-to-square me-2"></i>Atualizar</button>
                             </div>
+                            <!-- Exibe erros de validação -->
+                            <?php if (!empty($validationErrors)): ?>
+                                <div class="alert alert-danger p-2 text-center">
+                                    <ul>
+                                        <?php foreach ($validationErrors as $error): ?>
+                                            <li><?= $error ?></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            <?php endif; ?>
 
-                            <div class="alert alert-danger p-2 text-center">
-                                [mensagem de erro]
-                            </div>
+                            <!-- Exibe erros no servidor -->
+                            <?php if (!empty($serverErrors)): ?>
+                                <div class="alert alert-danger p-2 text-center">
+                                    <ul>
+                                        <?php foreach ($serverErrors as $error): ?>
+                                            <li><?= $error ?></li>
+                                        <?php endforeach; ?>
+                                    </ul>
+                                </div>
+                            <?php endif; ?>
 
                         </form>
                     </div>

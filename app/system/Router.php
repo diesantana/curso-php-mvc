@@ -2,12 +2,18 @@
 
 namespace bng\System;
 
-use Exception;
+use bng\Controllers\ErrorController;
 
 class Router
 {
     public static function dispatch()
     {
+
+        // Verifica se a url é uma rota válida
+        if (!isset($_GET['ct']) && $_SERVER['REQUEST_URI'] !== '/BNG/public/') {
+            self::pageNotFound();
+        }
+
         // Valores padrão
         $controller = 'main';
         $method     = 'index';
@@ -39,19 +45,40 @@ class Router
             unset($parameters['mt']); // Se existe uma chave com o valor 'mt' remove esse elemento
         }
 
+        // Montando o caminho completo da classe
+        $class = "bng\\Controllers\\$controller";
 
-        try {
-            // Montando o caminho completo da classe
-            $class = "bng\\Controllers\\$controller";
-            // Instância a classe
-            $controller = new $class();
-            // Chama o método passando os parâmetros como argumentos
-            $controller->$method(...$parameters);
-            // "..." representa o operador rest é utilizado para "espalhar" 
-            // os valores do array, sendo passados de forma indivudual como parâmetros na chamada do método
-
-        } catch (Exception $e) {
-            die($e->getMessage());
+        // verifica se o controller existe
+        if (!class_exists($class)) {
+            self::pageNotFound();
         }
+
+        // Instância a classe
+        $controller = new $class();
+
+        // verifica se o método existe e é público
+        // is_callable verifica se é publico
+        if (
+            !method_exists($controller, $method) ||
+            !is_callable([$controller, $method])
+        ) {
+            self::pageNotFound();
+        }
+
+        // Chama o método passando os parâmetros como argumentos
+        $controller->$method(...$parameters);
+        // "..." representa o operador rest é utilizado para "espalhar" 
+        // os valores do array, sendo passados de forma indivudual como parâmetros na chamada do método
+    }
+
+    /**
+     * Redireciona a lógica para o ErrorController. 
+     * Esse método é útil quando você precisa redireiona para página 404
+     */
+    private static function pageNotFound()
+    {
+        $errorController = new ErrorController();
+        $errorController->notFound();
+        exit;
     }
 }

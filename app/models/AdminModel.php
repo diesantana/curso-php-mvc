@@ -392,4 +392,28 @@ class AdminModel extends BaseModel
             return ['status' => true];
         }
     }
+
+    /**
+     * Recupera um agente deletado.
+     * Atualiza a coluna deleted_at para o valor NULL.
+     * @param string $id ID do agente a ser RECUPERADO. 
+     * @return Array Array associativo contendo status da operação (true ou false)
+     */
+    function recover_agent(string $id): array
+    {
+
+        // prepara a query
+        $params = [':id' => $id];
+        $sql = 'UPDATE agents SET deleted_at = NULL WHERE id = :id';
+
+        $this->db_connect(); // conexão com a base de dados
+
+        $results = $this->non_query($sql, $params); // executa a query
+
+        if ($results->affected_rows == 0) {
+            return ['status' => false]; // ocorreu algum erro
+        } else {
+            return ['status' => true];
+        }
+    }
 }

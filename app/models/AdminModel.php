@@ -146,7 +146,9 @@ class AdminModel extends BaseModel
                 CAST(AES_DECRYPT(a.name,'" . MYSQL_AES_KEY . "') AS CHAR) AS name,
                 a.profile,
                 a.last_login,
-                COALESCE(p.total, 0) AS total
+                COALESCE(p.total, 0) AS total,
+                a.updated_at,
+                a.deleted_at
             FROM agents a
             LEFT JOIN (
                 SELECT
@@ -155,7 +157,6 @@ class AdminModel extends BaseModel
                 FROM persons
                 GROUP BY id_agent
             ) p ON p.id_agent = a.id
-            WHERE a.deleted_at IS NULL
             ORDER BY name;";
 
         // Executa a query

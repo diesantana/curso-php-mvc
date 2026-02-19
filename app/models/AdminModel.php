@@ -348,10 +348,10 @@ class AdminModel extends BaseModel
      * - "['status'] = true" Se o agente já existe
      * - "['status'] = false" Se o agente não existe
      */
-    public function verify_name_is_available(string $id ,string $email): array
+    public function verify_name_is_available(string $id, string $email): array
     {
         // Prepara a query 
-        $params = [':id' => aes_decrypt($id) ,':name' => $email]; 
+        $params = [':id' => aes_decrypt($id), ':name' => $email];
         $sql = "SELECT  id FROM agents 
                 WHERE AES_ENCRYPT(:name, '" . MYSQL_AES_KEY . "') = name
                 AND id <> :id";
@@ -363,6 +363,31 @@ class AdminModel extends BaseModel
 
         if ($result->affected_rows == 0) {
             return ['status' => false];
+        } else {
+            return ['status' => true];
+        }
+    }
+
+    /**
+     * Deleta um agente da base de dados.
+     * Realiza um soft delete, atualizando a coluna deleted_at. O agente poderá
+     * ser recuperado a qualquer momento.  
+     * @param string $id ID do agente a ser deletado. 
+     * @return Array Array associativo contendo status da operação (true ou false)
+     */
+    function soft_delete_agent(string $id): array
+    {
+
+        // prepara a query
+        $params = [':id' => $id];
+        $sql = 'UPDATE agents SET deleted_at = NOW() WHERE id = :id';
+
+        $this->db_connect(); // conexão com a base de dados
+
+        $results = $this->non_query($sql, $params); // executa a query
+
+        if ($results->affected_rows == 0) {
+            return ['status' => false]; // ocorreu algum erro
         } else {
             return ['status' => true];
         }

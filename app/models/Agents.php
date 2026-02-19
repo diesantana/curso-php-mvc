@@ -33,7 +33,8 @@ class Agents extends BaseModel
         ];
 
         // query SQL que verifica se username existe na base de dados
-        $sql = "SELECT id, passwrd FROM agents WHERE name = AES_ENCRYPT(:username, '" . MYSQL_AES_KEY . "')";
+        $sql = "SELECT id, passwrd FROM agents WHERE name = AES_ENCRYPT(:username, '" . MYSQL_AES_KEY . "')
+        AND deleted_at IS NULL";
 
         // realiza a query. O retorno é um objeto com dados da consulta (Classe Database)
         $resultQuery = $this->query($sql, $params);

@@ -649,4 +649,42 @@ class AdminController extends BaseController
         $this->view('footer'); // footer
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
+
+    /**
+     * Recupera um utilizador deletado.
+     * @param $id Id do Agente.
+     */
+    function handle_recover_agent(string $id)
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Verifica se o ID é válido
+        $id = aes_decrypt($id);
+        if (empty($id)) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            exit;
+        }
+
+        // Executa o Recover
+        $adminModel = new AdminModel();
+        $recoverAgent = $adminModel->recover_agent($id);
+
+        // Verifica se o delete foi realizado
+        if (!$recoverAgent['status']) {
+            logger(get_active_username() . '- Não foi possível recuperar o agente na base de dados', 'error');
+            $this->show_agent_management();
+            exit;
+        }
+
+        // Logger da operação
+        logger(get_active_username() . '- O agente de ID: ' . aes_decrypt($id) . ' Foi recuperado com sucesso.');
+
+        // renderiza a lista de utilizadores novamente.
+        $this->show_agent_management();
+        exit;
+    }
 }

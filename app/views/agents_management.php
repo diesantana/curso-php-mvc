@@ -22,32 +22,60 @@
                 <table class="table table-striped table-bordered" id="global_users">
                     <thead class="table-dark">
                         <tr>
-                            <th>Nome</th>
+                            <!-- | Nome | Perfil | Registado | Estado | Último login | Clientes | Ações | -->
+                            <th class="text-center">Nome</th>
                             <th class="text-center">Perfil</th>
+                            <th class="text-center">Registrado</th>
+                            <th class="text-center">Estado</th>
                             <th class="text-center">Último login</th>
-                            <th class="text-center">Total clientes</th>
-                            <th></th>
+                            <th class="text-center">Clientes</th>
+                            <th class="text-center">Ações</th>
                         </tr>
                     </thead>
                     <tbody>
                         <!-- Dados dos agentes -->
                         <?php foreach ($agentsData as $currentAgent): ?>
                             <tr>
+                                <!-- username -->
                                 <td><?= $currentAgent->name ?></td>
+                                <!-- Perfil -->
                                 <td class="text-center"><?= $currentAgent->profile ?></td>
+                                <!-- Senha registrada -->
+                                <?php if (!empty($currentAgent->passwrd)) : ?>
+                                    <td class="text-center"><span class="text-success">✔</span></td>
+                                <?php else : ?>
+                                    <td class="text-center"><span class="text-danger">✖</span></td>
+                                <?php endif; ?>
+                                <!-- Estado (Deletado ou Ativo) -->
+                                <?php if (empty($currentAgent->deleted_at)) : ?>
+                                    <td class="text-center"><span class="badge bg-success">Ativo</span></td>
+                                <?php else : ?>
+                                    <td class="text-center"><span class="badge bg-secondary">Inativo</span></td>
+                                <?php endif; ?>
+                                <!-- Ultimo Login -->
                                 <td class="text-center"><?= $currentAgent->last_login ?></td>
+                                <!-- Qtd de clientes -->
                                 <td class="text-center"><?= $currentAgent->total ?></td>
-                                <td class="text-end">
+
+                                <!-- Ação -->
+                                <td class="text-center">
                                     <?php if ($currentAgent->profile == 'admin'): ?>
+                                        <!-- Se Admin = Somente leitura -->
                                         <span class="badge bg-secondary">
                                             <i class="fa-solid fa-lock me-2"></i>Somente leitura
                                         </span>
-                                    <?php else: ?>
-                                        <a href="<?='?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id)?>">
+                                    <?php elseif (empty($currentAgent->deleted_at)): ?>
+                                        <!-- Não é admin && Não está deletado = Editar - Deleter -->
+                                        <a href="<?='?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id) ?>">
                                             <i class="fa-regular fa-pen-to-square me-2"></i>Editar
                                         </a>
                                         <span class="mx-2 opacity-50">|</span>
-                                        <a href="<?='?ct=admincontroller&mt=show_user_delete_confirmation&id=' . urlencode($currentAgent->id)?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
+                                        <a href="<?='?ct=admincontroller&mt=show_user_delete_confirmation&id=' . urlencode($currentAgent->id) ?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
+                                    <?php else: ?>
+                                        <!-- Não é admin && Está deletado = Recuperar -->
+                                        <a href="<?='?ct=admincontroller&mt=show_user_recover_confirmation&id=' . urlencode($currentAgent->id) ?>">
+                                            <i class="fa-solid fa-rotate-left me-2"></i>Recuperar
+                                        </a>
                                     <?php endif; ?>
                                 </td>
                             </tr>

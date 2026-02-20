@@ -424,16 +424,16 @@ class AdminController extends BaseController
         }
         // Busca os dados do agente 
         $adminModel = new AdminModel();
-        $results = $adminModel->get_agent_by_id($id);
+        $agentDataSearch = $adminModel->get_agent_by_id($id);
 
-        if (!$results['status'] || empty($results['data'])) {
+        if (!$agentDataSearch['status'] || empty($agentDataSearch['data'])) {
             header('Location: index.php?ct=admincontroller&mt=show_agent_management');
             exit;
         }
 
         // Prepara os dados para a view
         $data['user'] = $_SESSION['user'];
-        $data['agent'] = $results['data'];
+        $data['agent'] = $agentDataSearch['data'];
 
         // Verifica se há mensagens de validação guardadas na sessão
         if (!empty($_SESSION['validationErrors'])) {
@@ -550,9 +550,9 @@ class AdminController extends BaseController
 
         // Busca os dados do agente a ser deletado.
         $adminModel = new AdminModel();
-        $results = $adminModel->get_agent_for_delete($id);
+        $agentDataSearch = $adminModel->get_agent_for_delete($id);
 
-        if (!$results['status'] || empty($results['data'])) {
+        if (!$agentDataSearch['status'] || empty($agentDataSearch['data'])) {
             header('Location: index.php?ct=admincontroller&mt=show_agent_management');
             // Redireciona para a lista de utilizadores. 
             exit;
@@ -560,7 +560,7 @@ class AdminController extends BaseController
 
         // Prepara os dados para a view
         $data['user'] = $_SESSION['user'];
-        $data['agent'] = $results['data'];
+        $data['agent'] = $agentDataSearch['data'];
 
         // Renderiza a view de confirmação de delete
         $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
@@ -606,5 +606,47 @@ class AdminController extends BaseController
         // renderiza a lista de utilizadores novamente.
         $this->show_agent_management();
         exit;
+    }
+
+    /**
+     * Renderiza a view de confirmação para recuperar um utilizador/agente.
+     * @param string $id Id encriptado do utilizador/agente a ser recuperado.
+     */
+    public function show_user_recover_confirmation(string $id)
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Verifica se o ID é válido
+        $id = aes_decrypt($id);
+
+        if (empty($id)) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            exit;
+        }
+
+        // Busca os dados do agente a ser deletado.
+        $adminModel = new AdminModel();
+        $agentDataSearch = $adminModel->get_agent_for_delete($id);
+
+        if (!$agentDataSearch['status'] || empty($agentDataSearch['data'])) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            // Redireciona para a lista de utilizadores. 
+            exit;
+        }
+
+        // Prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+        $data['agent'] = $agentDataSearch['data'];
+
+        // Renderiza a view de confirmação ao recuperar um agente
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('agents_recover_confirmation', $data); //
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 }

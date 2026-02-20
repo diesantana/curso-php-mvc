@@ -382,19 +382,16 @@ class AdminModel extends BaseModel
         // prepara a query
         $params = [':id' => $id];
         $sql = "SELECT a.id, CAST(AES_DECRYPT(a.name, '" . MYSQL_AES_KEY . "') AS CHAR) AS name, 
-            COUNT(p.id) AS total_clients FROM agents a LEFT JOIN persons p ON p.agent_id = a.id WHERE a.id = :id
+            COUNT(p.id) AS total_clients FROM agents a LEFT JOIN persons p ON p.id_agent = a.id WHERE a.id = :id
             GROUP BY a.id, a.name";
 
         // executa a query
         $resultQuery = $this->query($sql, $params);
 
-        if ($resultQuery->status == 'error') {
-            return ['status' => false];
+        if ($resultQuery->affected_rows == 0) {
+            return ['status' => false]; // ocorreu algum erro
         } else {
-            return [
-                'status' => true, 
-                'data' => $resultQuery->results[0]
-            ];
+            return ['status' => true, 'data' => $resultQuery->results[0]];
         }
     }
 

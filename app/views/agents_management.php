@@ -42,15 +42,45 @@
                                 <td class="text-center"><?= $currentAgent->profile ?></td>
                                 <!-- Senha registrada -->
                                 <?php if (!empty($currentAgent->passwrd)) : ?>
-                                    <td class="text-center"><span class="text-success">✔</span></td>
+                                    <td class="text-center">
+                                        <span class="text-success"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Cadastro concluído">
+                                            ✔
+                                        </span>
+                                    </td>
                                 <?php else : ?>
-                                    <td class="text-center"><span class="text-danger">✖</span></td>
+                                    <td class="text-center">
+                                        <span
+                                            class="text-danger"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="O agente não definiu a senha.">
+                                            ✖
+                                        </span>
+                                    </td>
                                 <?php endif; ?>
                                 <!-- Estado (Deletado ou Ativo) -->
                                 <?php if (empty($currentAgent->deleted_at)) : ?>
-                                    <td class="text-center"><span class="badge bg-success">Ativo</span></td>
+                                    <td class="text-center">
+                                        <span
+                                            class="badge bg-success"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="O agente está ativo no sistema.">
+                                            Ativo
+                                        </span>
+                                    </td>
                                 <?php else : ?>
-                                    <td class="text-center"><span class="badge bg-secondary">Inativo</span></td>
+                                    <td class="text-center">
+                                        <span class="badge bg-secondary"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="O agente foi deletado.">
+                                            Inativo
+                                        </span>
+                                    </td>
                                 <?php endif; ?>
                                 <!-- Ultimo Login -->
                                 <td class="text-center"><?= $currentAgent->last_login ?></td>
@@ -61,19 +91,23 @@
                                 <td class="text-center">
                                     <?php if ($currentAgent->profile == 'admin'): ?>
                                         <!-- Se Admin = Somente leitura -->
-                                        <span class="badge bg-secondary">
+                                        <span
+                                            class="badge bg-secondary"
+                                            data-bs-toggle="tooltip"
+                                            data-bs-placement="top"
+                                            title="Você não tem permissão para alterar esse agente.">
                                             <i class="fa-solid fa-lock me-2"></i>Somente leitura
                                         </span>
                                     <?php elseif (empty($currentAgent->deleted_at)): ?>
                                         <!-- Não é admin && Não está deletado = Editar - Deleter -->
-                                        <a href="<?='?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id) ?>">
+                                        <a href="<?= '?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id) ?>">
                                             <i class="fa-regular fa-pen-to-square me-2"></i>Editar
                                         </a>
                                         <span class="mx-2 opacity-50">|</span>
-                                        <a href="<?='?ct=admincontroller&mt=show_user_delete_confirmation&id=' . urlencode($currentAgent->id) ?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
+                                        <a href="<?= '?ct=admincontroller&mt=show_user_delete_confirmation&id=' . urlencode($currentAgent->id) ?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
                                     <?php else: ?>
                                         <!-- Não é admin && Está deletado = Recuperar -->
-                                        <a href="<?='?ct=admincontroller&mt=show_user_recover_confirmation&id=' . urlencode($currentAgent->id) ?>">
+                                        <a href="<?= '?ct=admincontroller&mt=show_user_recover_confirmation&id=' . urlencode($currentAgent->id) ?>">
                                             <i class="fa-solid fa-rotate-left me-2"></i>Recuperar
                                         </a>
                                     <?php endif; ?>
@@ -99,8 +133,8 @@
 <script>
     $(document).ready(function() {
 
-        // datatable
-        $('#global_users').DataTable({
+        // Inicializa DataTable
+        const table = $('#global_users').DataTable({
             pageLength: 10,
             pagingType: "full_numbers",
             language: {
@@ -128,5 +162,25 @@
                 }
             }
         });
-    })
+
+        // Função para ativar tooltips
+        function initTooltips() {
+            const tooltipTriggerList = [].slice.call(
+                document.querySelectorAll('[data-bs-toggle="tooltip"]')
+            );
+
+            tooltipTriggerList.map(function(tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl);
+            });
+        }
+
+        // Inicializa na primeira carga
+        initTooltips();
+
+        // Reinicializa toda vez que o DataTable redesenhar
+        table.on('draw', function() {
+            initTooltips();
+        });
+
+    });
 </script>

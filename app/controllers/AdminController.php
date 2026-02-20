@@ -687,4 +687,54 @@ class AdminController extends BaseController
         $this->show_agent_management();
         exit;
     }
+
+    /**
+     * Exporta todos os agentes com estátisticas para um arquivo XLSX.
+     */
+    public function export_global_agents_xlsx()
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Busca os dados dos agentes
+        $adminModel = new AdminModel();
+        $agentsData = $adminModel->get_agents_for_export();
+
+        // Verifica se os dados foram encontrados no model
+        if (!$agentsData['status']) {
+            logger(get_active_username() . '- Não foi possível encontrar os dados de estatística para exportação.', 'error');
+            $this->show_agent_management();
+            exit;
+        }
+
+        // Cria o header do arquivo
+        $data[] = ['name', 'profile', 'active', 'last login', 'created at', 'updated at', 'deleted at', 'total active clients', 'total deleted clients'];
+
+        // Salva os agentes no array $data
+        foreach ($agentsData['data'] as $agent) {
+            // remove o id
+            unset($agent->id);
+            // Adiciona o agente ao array
+            $data[] = (array)$agent;
+        }
+
+        // Salva os agentes em um arquivo XLSX
+        $filename = 'output_' . time() . '.xlsx'; // nomeia o arquivo
+        $spreadsheet = new Spreadsheet();
+        $spreadsheet->removeSheetByIndex(0);
+        $worksheet = new Worksheet($spreadsheet, 'dados');
+        $spreadsheet->addSheet($worksheet);
+        $worksheet->fromArray($data);
+
+        $writer = new Xlsx($spreadsheet);
+        header('Content-Type: application/vnd.openxmlformats-officedocument.spreadsheetml.sheet');
+        header('Content-Dispostion: attachment; filename="' . urlencode($filename) . '"');
+        $writer->save('php://output');
+
+        // Logger
+        logger(get_active_username() . '- Fez download da lista de agentes');
+    }
 }

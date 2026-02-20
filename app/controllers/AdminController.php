@@ -448,7 +448,7 @@ class AdminController extends BaseController
             // Limpa os erros do servidor na sessão
             unset($_SESSION['serverErrors']);
         }
-        
+
         // Verifica se há mensagens de sucesso na sessão
         if (!empty($_SESSION['successMessage'])) {
             $data['successMessage'] = $_SESSION['successMessage'];
@@ -526,5 +526,47 @@ class AdminController extends BaseController
         // Chama a view para exibir a mensagem de sucesso
         $this->show_user_edit_form($id);
         exit;
+    }
+
+    /**
+     * Renderiza a view de confirmação de deleção de utilizador/agente.
+     * @param string $id Id encriptado do utilizador/agente a ser deletado.
+     */
+    public function show_user_delete_confirmation(string $id)
+    {
+        // Verifica se existe um admin logado
+        if (!checkSession() || $_SESSION['user']->profile != 'admin') {
+            header('Location: index.php');
+            exit;
+        }
+
+        // Verifica se o ID é válido
+        $id = aes_decrypt($id);
+
+        if (empty($id)) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            exit;
+        }
+        
+        // Busca os dados do agente a ser deletado.
+        $adminModel = new AdminModel();
+        $results = $adminModel->get_agent_for_delete($id); 
+
+        if (!$results['status'] || empty($results['data'])) {
+            header('Location: index.php?ct=admincontroller&mt=show_agent_management');
+            // Redireciona para a lista de utilizadores. 
+            exit;
+        }
+
+        // Prepara os dados para a view
+        $data['user'] = $_SESSION['user'];
+        $data['agent'] = $results['data'];
+
+        // Renderiza a view de confirmação de delete
+        $this->view('layouts/html_header', $data); // Estrutura inicial do HTML
+        $this->view('navbar', $data); // navbar
+        $this->view('agents_delete_confirmation', $data); // Confirmação de delete
+        $this->view('footer'); // footer
+        $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
 }

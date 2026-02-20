@@ -445,4 +445,60 @@ class AdminModel extends BaseModel
             return ['status' => true];
         }
     }
+
+    /**
+     * Busca todos os agentes com estatísticas para exportação.
+     * Retorna nome, perfil, status, datas e total de clientes ativos e deletados.
+     * @return array Array associativo contendo status da operação (true ou false) 
+     * e os dados em formato stdClass Object se a operação for bem sucedida. 
+     */
+    public function get_agents_for_export(): array
+    {
+        $this->db_connect(); // Conexão com a base de dados
+
+        $sql = "
+        SELECT
+            a.id,
+            CAST(AES_DECRYPT(a.name, '" . MYSQL_AES_KEY . "') AS CHAR) AS name,
+            a.profile,
+
+            CASE
+                WHEN a.passwrd IS NOT NULL THEN 'active'
+                ELSE 'not active'
+            END AS active,
+
+            a.last_login,
+            a.created_at,
+            a.updated_at,
+            a.deleted_at,
+
+            SUM(
+                CASE
+                    WHEN p.id IS NOT NULL AND p.deleted_at IS NULL THEN 1
+                    ELSE 0
+                END
+            ) AS total_active_clients,
+
+            SUM(
+                CASE
+                    WHEN p.id IS NOT NULL AND p.deleted_at IS NOT NULL THEN 1
+                    ELSE 0
+                END
+            ) AS total_deleted_clients
+
+        FROM agents a
+        LEFT JOIN persons p ON a.id = p.id_agent
+        GROUP BY a.id
+        ORDER BY name;
+    ";
+
+        // Executa a query
+        $results = $this->query($sql);
+
+        if ($results->status == 'error') {
+            return ['status' => false];
+        } else {
+            return ['status' => true, 'data' => $results->results];
+        }
+    }
 }

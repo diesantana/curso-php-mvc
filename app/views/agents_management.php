@@ -43,11 +43,11 @@
                                             <i class="fa-solid fa-lock me-2"></i>Somente leitura
                                         </span>
                                     <?php else: ?>
-                                        <a href="<?= '?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id)?>">
+                                        <a href="<?='?ct=admincontroller&mt=show_user_edit_form&id=' . urlencode($currentAgent->id)?>">
                                             <i class="fa-regular fa-pen-to-square me-2"></i>Editar
                                         </a>
                                         <span class="mx-2 opacity-50">|</span>
-                                        <a href="#"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
+                                        <a href="<?='?ct=admincontroller&mt=show_user_delete_confirmation&id=' . urlencode($currentAgent->id)?>"><i class="fa-solid fa-trash-can me-2"></i>Eliminar</a>
                                     <?php endif; ?>
                                 </td>
                             </tr>

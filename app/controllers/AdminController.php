@@ -550,7 +550,7 @@ class AdminController extends BaseController
 
         // Busca os dados do agente a ser deletado.
         $adminModel = new AdminModel();
-        $agentDataSearch = $adminModel->get_agent_for_delete($id);
+        $agentDataSearch = $adminModel->get_agent_for_status_change($id);
 
         if (!$agentDataSearch['status'] || empty($agentDataSearch['data'])) {
             header('Location: index.php?ct=admincontroller&mt=show_agent_management');
@@ -630,7 +630,7 @@ class AdminController extends BaseController
 
         // Busca os dados do agente a ser deletado.
         $adminModel = new AdminModel();
-        $agentDataSearch = $adminModel->get_agent_for_delete($id);
+        $agentDataSearch = $adminModel->get_agent_for_status_change($id);
 
         if (!$agentDataSearch['status'] || empty($agentDataSearch['data'])) {
             header('Location: index.php?ct=admincontroller&mt=show_agent_management');

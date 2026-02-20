@@ -368,13 +368,13 @@ class AdminModel extends BaseModel
     }
 
     /**
-     * Busca os dados do utilizador a ser deletado.
+     * Busca os dados do utilizador para alterar o seu status (deletado ou recuperado).
      * Busca o ID, Username e quantidade de clientes do agente.
      * @param string $id Id do agente. 
      * @return array Array Array associativo contendo status da operação (true ou false) 
      * e os dados do agente se a operação for bem sucedida. 
      */
-    public function get_agent_for_delete(string $id): array
+    public function get_agent_for_status_change(string $id): array
     {
         // conexão com a base de dados
         $this->db_connect();

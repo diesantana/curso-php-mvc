@@ -339,7 +339,6 @@ class AdminModel extends BaseModel
         }
     }
 
-
     /**
      * Verifica se o nome está disponível para atualização.
      * @param string $id Id do agente a ser atualizado.
@@ -367,6 +366,38 @@ class AdminModel extends BaseModel
             return ['status' => true];
         }
     }
+
+    /**
+     * Busca os dados do utilizador a ser deletado.
+     * Busca o ID, Username e quantidade de clientes do agente.
+     * @param string $id Id do agente. 
+     * @return array Array Array associativo contendo status da operação (true ou false) 
+     * e os dados do agente se a operação for bem sucedida. 
+     */
+    public function get_agent_for_delete(string $id): array
+    {
+        // conexão com a base de dados
+        $this->db_connect();
+
+        // prepara a query
+        $params = [':id' => $id];
+        $sql = "SELECT a.id, CAST(AES_DECRYPT(a.name, '" . MYSQL_AES_KEY . "') AS CHAR) AS name, 
+            COUNT(p.id) AS total_clients FROM agents a LEFT JOIN persons p ON p.agent_id = a.id WHERE a.id = :id
+            GROUP BY a.id, a.name";
+
+        // executa a query
+        $resultQuery = $this->query($sql, $params);
+
+        if ($resultQuery->status == 'error') {
+            return ['status' => false];
+        } else {
+            return [
+                'status' => true, 
+                'data' => $resultQuery->results[0]
+            ];
+        }
+    }
+
 
     /**
      * Deleta um agente da base de dados.

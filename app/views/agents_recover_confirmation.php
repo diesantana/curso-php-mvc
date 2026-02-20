@@ -13,7 +13,7 @@
 
                 <div class="text-center my-3">
                     <a href="?ct=admincontroller&mt=show_agent_management" class="btn btn-secondary px-4"><i class="fa-solid fa-xmark me-2"></i>Não</a>
-                    <a href="#" class="btn btn-secondary px-4"><i class="fa-solid fa-check me-2"></i>Sim</a>
+                    <a href="<?='?ct=admincontroller&mt=handle_recover_agent&id=' . urlencode($agent->id)?>" class="btn btn-secondary px-4"><i class="fa-solid fa-check me-2"></i>Sim</a>
                 </div>
                 
             </div>

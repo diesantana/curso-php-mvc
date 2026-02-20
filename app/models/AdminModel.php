@@ -145,6 +145,7 @@ class AdminModel extends BaseModel
                 a.id,
                 CAST(AES_DECRYPT(a.name,'" . MYSQL_AES_KEY . "') AS CHAR) AS name,
                 a.profile,
+                a.passwrd,
                 a.last_login,
                 COALESCE(p.total, 0) AS total,
                 a.updated_at,

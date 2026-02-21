@@ -407,4 +407,60 @@ class Agents extends BaseModel
             return ['status' => false];
         }
     }
+
+    /**
+     * Cria um código de recuperação de senha de um agente com base no username.
+     * O código é um número aleatório de 6 dígitos.
+     * O código é armazenado na base de dados e pode ser consultado posteriormente.
+     * @param string $username Username do agente que deseja recuperar a senha.
+     * @return array Se ['status'] = TRUE, operação realizada com sucesso, Se ['status'] = FALSE ocorreu um erro.
+     * - 'status' Status da operação (true ou false).
+     * - 'id' ID do agente.
+     * - 'code' Código de recuperação de senha.
+     */
+    public function create_password_recovery_code(string $username): array
+    {
+        $this->db_connect(); // Conexão com a base de dados
+
+        // Busca o ID do agente com o username fornecido
+        $sql = "
+        SELECT id
+        FROM agents
+        WHERE name = AES_ENCRYPT(:username, '" . MYSQL_AES_KEY . "')
+          AND passwrd IS NOT NULL
+          AND deleted_at IS NULL
+        LIMIT 1
+    ";
+
+        // Executa a query
+        $selectQueryResult = $this->db->query($sql, [':username' => $username]);
+
+        // Verifica se o agente foi encontrado
+        if (empty($selectQueryResult['status']) || empty($selectQueryResult['data'])) {
+            return ['status' => false];
+        }
+
+        // ID do agente
+        $id = (int)$selectQueryResult['data'][0]->id;
+
+        // Cria o código de recuperação de 6 dígitos
+        $code = (string) rand(100000, 999999);
+
+        // Atualiza o código no banco de dados
+        $updateQueryResult = $this->db->query(
+            "UPDATE agents SET code = :code WHERE id = :id LIMIT 1",
+            [':code' => $code, ':id' => $id]
+        );
+
+        // Verifica se a atualização foi bem-sucedida
+        if (empty($updateQueryResult['status'])) {
+            return ['status' => false];
+        }
+
+        return [
+            'status' => true,
+            'id' => $id,
+            'code' => $code
+        ];
+    }
 }

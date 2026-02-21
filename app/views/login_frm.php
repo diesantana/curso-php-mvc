@@ -30,7 +30,7 @@
                             </div>
 
                             <div class="mb-3 text-center">
-                                <a href="#">Esqueceu sua senha?</a>
+                                <a href="?ct=main&mt=show_recover_password_form">Esqueceu sua senha?</a>
                             </div>
 
                             <!-- Exibe erros de validação -->

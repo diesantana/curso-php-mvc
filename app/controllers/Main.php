@@ -428,4 +428,39 @@ class Main extends BaseController
         $this->view('reset_password_define_password_success');
         $this->view('layouts/html_footer'); // Estrutura final do HTML
     }
+
+    /**
+     * Renderiza a view de recuperação de senha.
+     *
+     * Verifica se o agente está logado e redireciona para o index.
+     * Verifica se existem erros de validação e de servidor e os atribui para a variável $data.
+     * Renderiza a view de recuperação de senha com os possíveis erros.
+     */
+    public function show_recover_password_form()
+    {
+        // Verifica se existe um user logado.
+        // não faz sentido recuperar password estando logado
+        if (checkSession()) {
+            $this->index();
+            return;
+        }
+
+        $data = []; // Armazena os erros de validação e de servidor
+
+        // Verifica se existem erros de validação e de servidor e os atribui para a variável $data
+        if (!empty($_SESSION['validation_errors'])) {
+            $data['validation_errors'] = $_SESSION['validation_errors'];
+            unset($_SESSION['validation_errors']);
+        }
+
+        if (!empty($_SESSION['server_error'])) {
+            $data['server_error'] = $_SESSION['server_error'];
+            unset($_SESSION['server_error']);
+        }
+
+        // Renderiza a view de recuperação de senha
+        $this->view('layouts/html_header');
+        $this->view('reset_password_frm', $data);
+        $this->view('layouts/html_footer');
+    }
 }

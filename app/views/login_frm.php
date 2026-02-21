@@ -10,46 +10,52 @@
 
                 <div class="row justify-content-center">
                     <div class="col-8">
-                        <!-- ÍNICIO DO FORMULÁRIO ---------------------------------------------------- -->
+                        <!-- INÍCIO DO FORMULÁRIO ---------------------------------------------------- -->
                         <form action="?ct=main&mt=login_submit" method="post" novalidate>
+
                             <div class="mb-3">
-                                <label for="text_username" class="form-label">Utilizador</label>
+                                <label for="text_username" class="form-label">E-mail</label>
                                 <input type="email" name="text_username" id="text_username" value="" class="form-control" required>
                             </div>
+
                             <div class="mb-3">
-                                <label for="text_password" class="form-label">Password</label>
+                                <label for="text_password" class="form-label">Senha</label>
                                 <input type="password" name="text_password" id="text_password" class="form-control" required>
-                            </div>
-                            <div class="mb-3 text-center">
-                                <button type="submit" class="btn btn-secondary px-4">Entrar<i class="fa-solid fa-right-to-bracket ms-2"></i></button>
                             </div>
 
                             <div class="mb-3 text-center">
-                                <a href="#">Esqueci-me da password!</a>
+                                <button type="submit" class="btn btn-secondary px-4">
+                                    Entrar <i class="fa-solid fa-right-to-bracket ms-2"></i>
+                                </button>
+                            </div>
+
+                            <div class="mb-3 text-center">
+                                <a href="#">Esqueceu sua senha?</a>
                             </div>
 
                             <!-- Exibe erros de validação -->
-                            <?php if(!empty($validation_errors)):?>
+                            <?php if (!empty($validation_errors)): ?>
                                 <div class="alert alert-danger p-2 text-center">
-                                        <?php foreach($validation_errors as $error):?>
-                                            <p><?= $error?></p>
-                                        <?php endforeach;?>
-                                    </div>
-                            <?php endif;?>
-                            
+                                    <?php foreach ($validation_errors as $error): ?>
+                                        <p class="mb-1"><?= $error ?></p>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
                             <!-- Exibe erros do servidor -->
-                            <?php if(!empty($server_error)):?>
+                            <?php if (!empty($server_error)): ?>
                                 <div class="alert alert-danger p-2 text-center">
-                                        <?php foreach($server_error as $error):?>
-                                            <p><?= $error?></p>
-                                        <?php endforeach;?>
-                                    </div>
-                            <?php endif;?>
+                                    <?php foreach ($server_error as $error): ?>
+                                        <p class="mb-1"><?= $error ?></p>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
                         </form>
                         <!-- FIM DO FORMULÁRIO ---------------------------------------------------- -->
                     </div>
                 </div>
-                
+
             </div>
         </div>
     </div>

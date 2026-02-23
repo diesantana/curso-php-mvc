@@ -5,6 +5,7 @@ namespace bng\Controllers;
 use bng\Controllers\BaseController;
 use bng\Models\AdminModel;
 use bng\Models\Agents;
+use bng\System\SendEmail;
 
 class Main extends BaseController
 {
@@ -461,6 +462,116 @@ class Main extends BaseController
         // Renderiza a view de recuperação de senha
         $this->view('layouts/html_header');
         $this->view('reset_password_frm', $data);
+        $this->view('layouts/html_footer');
+    }
+
+    public function handle_recover_password()
+    {
+        if (checkSession()) {
+            header('Location: index.php');
+            exit;
+        }
+
+        if ($_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php');
+            exit;
+        }
+
+        $validation_errors = [];
+
+        $username = trim($_POST['text_username'] ?? '');
+
+        if (empty($username)) {
+            $validation_errors[] = 'O username é obrigatório.';
+        } elseif (!filter_var($username, FILTER_VALIDATE_EMAIL)) {
+            $validation_errors[] = 'O username deve ser um email válido.';
+        }
+
+        if (!empty($validation_errors)) {
+            $_SESSION['validation_errors'] = $validation_errors;
+            header('Location: index.php?ct=main&mt=show_recover_password_form');
+            exit;
+        }
+
+        $agentModel = new Agents();
+        $resultCreationCode = $agentModel->create_password_recovery_code($username);
+
+        if (!$resultCreationCode['status']) {
+
+            // Tratando os erros de servidor
+            $_SESSION['server_errors'][] = 'Ocorreu um erro ao solicitar a recuperação de password. Entre em contato com o suporte ou tente novamente mais tarde';
+
+            // Log da operação
+            logger('Ocorreu um erro ao solicitar a recuperação de password', 'error');
+
+            // Redireciona para o formulário de recuperação de senha
+            header('Location: index.php?ct=main&mt=show_recover_password_form');
+            exit;
+        }
+
+        // Enviar email com o código e redirecionar para a tela de inserir código
+        $id = $resultCreationCode['id'];
+        $code = $resultCreationCode['code'];
+
+        $mailer = new SendEmail(); // Instancia a classe de envio de emails
+
+        // Envia o email com o código de recuperação de senha
+        $resultSendEmail = $mailer->send_password_recovery_code_email($username, $code);
+
+        // Verifica se o envio do email foi bem sucedido
+        if (empty($resultSendEmail['status']) || $resultSendEmail['status'] !== 'success') {
+            $_SESSION['server_error'] = ['Ocorreu um erro ao enviar o email. Tente novamente.'];
+            header('Location: index.php?ct=main&mt=show_recover_password_form');
+            exit;
+            // Se o email não for enviado o usuário volta para o formulário com erro
+        }
+
+        // Redireciona para a tela de inserir código
+        $this->show_recover_password_code_form(aes_encrypt($id));
+        exit;
+    }
+
+    /**
+     * Renderiza a view de inserir código de recuperação de senha.
+     * Essa view é exibida ao usuário que solicitou a recuperação de senha.
+     * O código de recuperação de senha é enviado por email para o usuário.
+     * O usuário deve introduzir o código correto para que possa redefinir sua senha.
+     * @param string $id Id encriptado do utilizador/agente a ser recuperado.
+     */
+    public function show_recover_password_code_form(string $id = '')
+    {
+        // Verifica se o utilizador está logado
+        if (checkSession()) {
+            $this->index();
+            return;
+        }
+
+        $decrypted_id = aes_decrypt($id); // Desencripta o id
+
+        // Verifica se o id foi desencriptado
+        if (empty($decrypted_id)) {
+            header('Location: index.php');
+            exit;
+        }
+
+        $data = [];
+        $data['id'] = (int)$decrypted_id;
+
+        // Verifica se existem erros de validação
+        if (!empty($_SESSION['validation_errors'])) {
+            $data['validation_errors'] = $_SESSION['validation_errors'];
+            unset($_SESSION['validation_errors']);
+        }
+
+        // Verifica se existem erros do servidor
+        if (!empty($_SESSION['server_error'])) {
+            $data['server_error'] = $_SESSION['server_error'];
+            unset($_SESSION['server_error']);
+        }
+
+        // Renderiza a view
+        $this->view('layouts/html_header');
+        $this->view('reset_password_insert_code', $data);
         $this->view('layouts/html_footer');
     }
 }

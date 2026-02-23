@@ -628,5 +628,51 @@ class Main extends BaseController
 
 
         // redireciona para a tela de redefinicao de senha
+        $this->show_recover_password_define_form(aes_encrypt($decrypted_id));
+        exit;
+    }
+
+    /**
+     * Renderiza a view de redefinição de senha.
+     *
+     * Essa função é responsável por renderizar a view de redefinição de senha.
+     * O utilizador deve introduzir a nova senha e confirmá-la.
+     * @param string $id Id encriptado do utilizador/agente a ser recuperado.
+     */
+    public function show_recover_password_define_form(string $id = '')
+    {
+        // Verifica se o utilizador nao esta logado
+        if (checkSession()) {
+            $this->index();
+            return;
+        }
+
+        $decrypted_id = aes_decrypt($id); // Desencripta o id
+
+        // Verifica se o id foi desencriptado
+        if (empty($decrypted_id)) {
+            header('Location: index.php');
+            exit;
+        }
+
+        $data = [];
+        $data['id'] = $decrypted_id; // Armazena o id desencriptado
+
+        // Verifica se existem erros de validação
+        if (!empty($_SESSION['validation_errors'])) {
+            $data['validation_errors'] = $_SESSION['validation_errors'];
+            unset($_SESSION['validation_errors']);
+        }
+
+        // Verifica se existem erros do servidor
+        if (!empty($_SESSION['server_error'])) {
+            $data['server_error'] = $_SESSION['server_error'];
+            unset($_SESSION['server_error']);
+        }
+
+        // Renderiza a view
+        $this->view('layouts/html_header');
+        $this->view('reset_password_define_password_frm', $data);
+        $this->view('layouts/html_footer');
     }
 }

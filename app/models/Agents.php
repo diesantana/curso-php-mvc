@@ -429,31 +429,30 @@ class Agents extends BaseModel
         WHERE name = AES_ENCRYPT(:username, '" . MYSQL_AES_KEY . "')
           AND passwrd IS NOT NULL
           AND deleted_at IS NULL
-        LIMIT 1
-    ";
+        LIMIT 1";
 
         // Executa a query
-        $selectQueryResult = $this->db->query($sql, [':username' => $username]);
+        $selectQueryResult = $this->query($sql, [':username' => $username]);
 
         // Verifica se o agente foi encontrado
-        if (empty($selectQueryResult['status']) || empty($selectQueryResult['data'])) {
+        if (empty($selectQueryResult->status) || empty($selectQueryResult->results)) {
             return ['status' => false];
         }
 
         // ID do agente
-        $id = (int)$selectQueryResult['data'][0]->id;
+        $id = (int)$selectQueryResult->results[0]->id;
 
         // Cria o código de recuperação de 6 dígitos
         $code = (string) rand(100000, 999999);
 
         // Atualiza o código no banco de dados
-        $updateQueryResult = $this->db->query(
+        $updateQueryResult = $this->query(
             "UPDATE agents SET code = :code WHERE id = :id LIMIT 1",
             [':code' => $code, ':id' => $id]
         );
 
         // Verifica se a atualização foi bem-sucedida
-        if (empty($updateQueryResult['status'])) {
+        if (empty($updateQueryResult->status)) {
             return ['status' => false];
         }
 

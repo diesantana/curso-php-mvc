@@ -574,4 +574,59 @@ class Main extends BaseController
         $this->view('reset_password_insert_code', $data);
         $this->view('layouts/html_footer');
     }
+
+    /**
+     * Trata o formulário de recuperação de senha com código.
+     * Essa função é responsável por tratar o formulário de recuperação de senha com código.
+     * O usuário deve introduzir o código correto para que possa redefinir sua senha.
+     * @param string $id Id encriptado do utilizador/agente a ser recuperado.
+     */
+    public function handle_recover_password_code(string $id = '')
+    {
+        // Verifica se o utilizador nao esta logado
+        if (checkSession() || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php');
+            exit;
+        }
+
+        $decrypted_id = aes_decrypt($id); // Desencripta o id
+
+        // Verifica se o id foi desencriptado
+        if (empty($decrypted_id)) {
+            header('Location: index.php');
+            exit;
+        }
+
+        $validation_errors = [];
+
+        $code = trim($_POST['text_code'] ?? '');
+
+        // Valida o código
+        if (empty($code)) {
+            $validation_errors[] = 'O código é obrigatório.';
+        } elseif (!preg_match('/^\d{6}$/', $code)) {
+            $validation_errors[] = 'O código deve conter exatamente 6 dígitos.';
+        }
+
+        // Verifica se houve erros de validação
+        if (!empty($validation_errors)) {
+            $_SESSION['validation_errors'] = $validation_errors;
+            $this->show_recover_password_code_form(aes_encrypt($decrypted_id));
+            exit;
+        }
+
+        // Verifica se o código é valido
+        $agents = new Agents();
+        $result = $agents->validate_password_recovery_code($decrypted_id, $code);
+
+        // Código inválido
+        if (empty($result['status'])) {
+            $_SESSION['server_error'] = ['Código inválido.'];
+            $this->show_recover_password_code_form(aes_encrypt($decrypted_id));
+            exit;
+        }
+
+
+        // redireciona para a tela de redefinicao de senha
+    }
 }

@@ -30,6 +30,28 @@ class SendEmail
     }
 
     /**
+     * Envia um email para o agente com o código de recuperação de senha.
+     * O email contém o código de recuperação de senha.
+     * @param string $email Email do agente.
+     * @param string $code Código de recuperação de senha.
+     * @return array Retorna um array contendo status da operação (success ou error) e mensagem.
+     */
+    public function send_password_recovery_code_email(string $email, string $code): array
+    {
+        $subject = 'Código para recuperar password';
+
+        $html_body = $this->password_recovery_code_template($code);
+        $alt_body  = $this->password_recovery_code_alt_text($code);
+
+        return $this->sendEmail(
+            [$email],
+            $subject,
+            $html_body,
+            $alt_body
+        );
+    }
+
+    /**
      * Envia um e-mail (HTML) para um ou mais destinarátios usando PHPMailer.
      * @param array $recipients Lista de destinatários.
      * @param string $subject Assunto do email.

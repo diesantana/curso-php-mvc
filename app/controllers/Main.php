@@ -675,4 +675,78 @@ class Main extends BaseController
         $this->view('reset_password_define_password_frm', $data);
         $this->view('layouts/html_footer');
     }
+
+    /**
+     * Trata a submissão do formulário de redefinição de senha.
+     * Essa função é responsável por validar os campos do formulário de redefinição de senha.
+     * Valida os campos e atualiza a senha no modelo.
+     * @param string $id Id encriptado do utilizador/agente a ser recuperado.
+     */
+    public function handle_recover_password_define(string $id = '')
+    {
+        // Verifica se o formulário foi enviado
+        if (checkSession() || $_SERVER['REQUEST_METHOD'] !== 'POST') {
+            header('Location: index.php');
+            exit;
+        }
+
+        $decrypted_id = aes_decrypt($id); // Desencripta o id
+
+        // Verifica se o id foi desencriptado
+        if (empty($decrypted_id)) {
+            header('Location: index.php');
+            exit;
+        }
+
+        $validation_errors = [];
+
+        $new_password     = $_POST['text_new_password'] ?? ''; // Nova password
+        $repeat_password  = $_POST['text_repeat_new_password'] ?? ''; // Repetição da nova password
+
+        // Valida os campos
+        if (empty($new_password)) {
+            $validation_errors[] = 'A nova password é obrigatória.';
+        }
+
+        if (empty($repeat_password)) {
+            $validation_errors[] = 'A repetição da password é obrigatória.';
+        }
+
+        // Tamanho 6–12
+        if (!empty($new_password) && (strlen($new_password) < 6 || strlen($new_password) > 12)) {
+            $validation_errors[] = 'A password deve ter entre 6 e 12 caracteres.';
+        }
+
+        // Regex: 1 maiúscula, 1 minúscula e 1 número
+        if (!empty($new_password) && !preg_match('/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/', $new_password)) {
+            $validation_errors[] = 'A password deve conter pelo menos uma letra maiúscula, uma minúscula e um número.';
+        }
+
+        // Verificar igualdade
+        if ($new_password !== $repeat_password) {
+            $validation_errors[] = 'As passwords não coincidem.';
+        }
+
+        // Erros de validação
+        if (!empty($validation_errors)) {
+            $_SESSION['validation_errors'] = $validation_errors;
+            $this->show_recover_password_define_form(aes_encrypt($decrypted_id));
+            exit;
+        }
+
+        // atualizar password no model
+        $agents = new Agents();
+        $result = $agents->update_password_from_recovery($decrypted_id, $new_password);
+
+        if (empty($result['status'])) {
+            $_SESSION['server_error'] = ['Ocorreu um erro ao atualizar a password.'];
+            $this->show_recover_password_define_form(aes_encrypt($decrypted_id));
+            exit;
+        }
+
+        // Sucesso → mostrar tela final
+        $this->view('layouts/html_header');
+        $this->view('reset_password_define_password_success');
+        $this->view('layouts/html_footer');
+    }
 }

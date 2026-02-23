@@ -11,8 +11,7 @@
                 <div class="row justify-content-center">
                     <div class="col-8">
 
-                        <form action="#" method="post">
-
+                        <form action="?ct=main&mt=handle_recover_password_define&id=<?= aes_encrypt($id) ?>" method="post" novalidate>
                             <p class="mb-3">Introduza os dados da <strong>nova password</strong>.</p>
 
                             <div class="mb-3">
@@ -24,14 +23,31 @@
                                 <label for="text_repeat_new_password" class="form-label">Repetir a nova password</label>
                                 <input type="password" name="text_repeat_new_password" id="text_repeat_new_password" class="form-control" required>
                             </div>
-                            
+
                             <div class="mb-3 text-center">
+                                <a href="?ct=main&mt=index" class="btn btn-secondary">
+                                    Cancelar
+                                </a>
                                 <button type="submit" class="btn btn-secondary"><i class="fa-solid fa-key me-2"></i>Definir password</button>
                             </div>
 
-                            <div class="alert alert-danger p-2 text-center">
-                                [mensagem de erro]
-                            </div>
+                            <!-- ERROS DE VALIDAÇÃO -->
+                            <?php if (!empty($validation_errors)): ?>
+                                <div class="alert alert-danger p-2 text-center">
+                                    <?php foreach ($validation_errors as $error): ?>
+                                        <p class="mb-1"><?= $error ?></p>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
+
+                            <!-- ERROS DO SERVIDOR -->
+                            <?php if (!empty($server_error)): ?>
+                                <div class="alert alert-danger p-2 text-center">
+                                    <?php foreach ($server_error as $error): ?>
+                                        <p class="mb-1"><?= $error ?></p>
+                                    <?php endforeach; ?>
+                                </div>
+                            <?php endif; ?>
 
                         </form>
 

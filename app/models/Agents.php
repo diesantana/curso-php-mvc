@@ -492,4 +492,32 @@ class Agents extends BaseModel
 
         return ['status' => true];
     }
+
+    /**
+     * Atualiza a senha do agente com base no id.
+     * O código de recuperação de senha é removido após a atualização da senha.
+     * @param string $id Id do agente a ser atualizado.
+     * @param string $password Nova senha do agente.
+     * @return array Retorna um array com o status da atualização da senha (true ou false).
+     */
+    public function update_password_from_recovery(string $id, string $password): array
+    {
+        $this->db_connect(); // Conexão com a base de dados
+
+        // Transforma a senha em hash
+        $hashed_password = password_hash($password, PASSWORD_DEFAULT);
+
+        $params = [':password' => $hashed_password,':id'       => $id];
+        $sql = "UPDATE agents SET passwrd = :password, code = NULL, updated_at = NOW() WHERE id = :id LIMIT 1";
+
+        // Executa a query
+        $res = $this->query($sql, $params);
+
+        // Verifica se a atualização foi bem-sucedida
+        if (empty($res->status)) {
+            return ['status' => false];
+        }
+
+        return ['status' => true];
+    }
 }

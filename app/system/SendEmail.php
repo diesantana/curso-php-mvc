@@ -29,7 +29,6 @@ class SendEmail
         );
     }
 
-
     /**
      * Envia um e-mail (HTML) para um ou mais destinarátios usando PHPMailer.
      * @param array $recipients Lista de destinatários.
@@ -100,5 +99,36 @@ class SendEmail
 
                 {$link}
         TEXT;
+    }
+
+    /**
+     * Monta o corpo do email para recuperação de senha.
+     * @param string $code Código de recuperação de senha.
+     * @return string Corpo do email em formato HTML.
+     */
+    private function password_recovery_code_template(string $code): string
+    {
+        return '
+        <p>Recebemos um pedido para recuperar a sua password.</p>
+
+        <p>O seu código de recuperação é:</p>
+
+        <h2 style="letter-spacing: 2px; font-size: 28px;">
+            ' . htmlspecialchars($code) . '
+        </h2>
+    ';
+    }
+
+    /**
+     * Monta o corpo alternativo do email para recuperação de senha.
+     * @param string $code Código de recuperação de senha.
+     * @return string Corpo do email em formato txt.
+     */
+    private function password_recovery_code_alt_text(string $code): string
+    {
+        return
+            "Recebemos um pedido para recuperar a sua password.\n\n" .
+            "O seu código de recuperação é: {$code}\n\n" .
+            "Se você não solicitou esta operação, ignore este email.";
     }
 }

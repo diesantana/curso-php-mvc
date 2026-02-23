@@ -462,4 +462,34 @@ class Agents extends BaseModel
             'code' => $code
         ];
     }
+
+    /**
+     * Valida se o código de recuperação de senha é válido.
+     * Verifica se o agente com o id fornecido tem o código de recuperação de senha igual ao fornecido.
+     * Se o código for válido, retorna um array com o status true.
+     * Se o código for inválido, retorna um array com o status false.
+     *
+     * @param string $id Id do agente.
+     * @param string $code Código de recuperação de senha.
+     * @return array Retorna um array com o status da validação do código de recuperação de senha.
+     */
+    public function validate_password_recovery_code(string $id, string $code): array
+    {
+        $this->db_connect(); // Conexão com a base de dados
+
+        // Parâmetros da query
+        $params = [':id' => $id, ':code' => $code];
+
+        $sql = " SELECT id FROM agents WHERE id = :id AND code = :code LIMIT 1";
+
+        // Executa a query
+        $selectQueryResult = $this->query($sql, $params);
+
+        // Verifica se o agente foi encontrado
+        if (empty($selectQueryResult->status) || empty($selectQueryResult->results)) {
+            return ['status' => false];
+        }
+
+        return ['status' => true];
+    }
 }
